@@ -8,14 +8,30 @@ def make_icon(path):
     icon = Image.open(path)
     return ImageTk.PhotoImage(icon)
 
-def initialize_gui(settings):
-    gui = tk.Tk()
-    gui.title("ac_editor")
+def close_window(gui, settings):
+    settings.save() 
+    gui.destroy()
 
-    gui.wm_iconphoto(False, make_icon("./resources/logo.png"))
+def create_submenu(menubar, labels):
+    submenu = tk.Menu(menubar)
+    for label in labels:
+        submenu.add_command(label=label)
+    return submenu
+
+def initialize_gui(settings):
+    LOGO_LOCATION = "./resources/logo.png"
+    TITLE = "ac_editor"
+    DEFAULT_LEXER = pygments.lexers.CLexer()
+
+    settings.load()
+
+    gui = tk.Tk()
+    gui.title(TITLE)
+    gui.wm_iconphoto(False, make_icon(LOGO_LOCATION))
+    gui.protocol("WM_DELETE_WINDOW", lambda: close_window(gui, settings))
 
     codeview = CodeView(gui, 
-                        lexer=pygments.lexers.CLexer(), 
+                        lexer=DEFAULT_LEXER, 
                         color_scheme=settings.colour, 
                         font=(settings.font_type, settings.font_size))
 
@@ -25,36 +41,18 @@ def initialize_gui(settings):
 
     gui.config(menu=menubar)
 
-    file_menu = tk.Menu(menubar)
-    edit_menu = tk.Menu(menubar)
-    settings_menu = tk.Menu(menubar)
+    file_menu = create_submenu(menubar, ["New", "Open", "Save As", "Rename"]) 
+    edit_menu = create_submenu(menubar, ["Cut", "Copy", "Paste", "Select All"])
+    settings_menu = create_submenu(menubar, ["Theme", "Tab Size", "Line Endings"])
 
-    file_menu.add_command(label = "New")
-    file_menu.add_command(label = "Open")
-    file_menu.add_command(label = "Save As")
-    file_menu.add_command(label = "Rename")
-
-    edit_menu.add_command(label = "Cut")
-    edit_menu.add_command(label = "Copy")
-    edit_menu.add_command(label = "Paste")
-    edit_menu.add_command(label = "Select All")
-
-    settings_menu.add_command(label = "Theme")
-    settings_menu.add_command(label = "Tab Size")
-    settings_menu.add_command(label = "Line Endings")
-
-    menubar.add_cascade(label = "File", menu=file_menu)
-    menubar.add_cascade(label = "Edit", menu=edit_menu)
-    menubar.add_cascade(label = "Settings", menu=settings_menu)
+    menubar.add_cascade(label="File", menu=file_menu)
+    menubar.add_cascade(label="Edit", menu=edit_menu)
+    menubar.add_cascade(label="Settings", menu=settings_menu)
 
     return gui
 
 
-
 if (__name__ == "__main__"):
-    settings = Settings()
-    settings.load()
-    window = initialize_gui(settings)
-    window.mainloop()
-    settings.save()
+    gui = initialize_gui(Settings())
+    gui.mainloop()
     
