@@ -1,23 +1,24 @@
 import tkinter as tk
-import chlorophyll
+import pygments.lexers 
+from chlorophyll import CodeView
+from PIL import Image, ImageTk
 
-# def create_submenu(menubar, label):
-#     submenu = tk.Menu(menubar)
-#     submenu.add_command(label=label)
-#     return menubar
 
-# def add_menus(gui):
-#     menubar = tk.Menu(gui)
-#     gui.config(menu=menubar) 
-#     menubar = create_submenu(menubar, "File")
-#     menubar = create_submenu(menubar, "Edit")
-#     menubar = create_submenu(menubar, "Settings")
-#     return gui
+def make_icon(path):
+    icon = Image.open(path)
+    return ImageTk.PhotoImage(icon)
 
 def initialize_gui():
     gui = tk.Tk()
     gui.title("ac_editor")
 
+
+
+    gui.wm_iconphoto(False, make_icon("./resources/logo.png"))
+
+    codeview = CodeView(gui, lexer=pygments.lexers.CLexer(), color_scheme="monokai")#, font=tk.font(family="Consolas", size=12))
+    codeview.pack(fill="both", expand=True)     
+    
     menubar = tk.Menu(gui)
 
     gui.config(menu=menubar)
