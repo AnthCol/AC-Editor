@@ -2,14 +2,14 @@ import os
 import sqlite3
 from file_datatypes import SavedFile, UnsavedFile
 
+
 class Database():
-    DB_NAME = "editor_data.db"
     DB_DIRECTORY = "../database/"
+    DB_PATH = "../database/editor_data.db"
 
     def __init__(self):
         os.makedirs(self.DB_DIRECTORY, exist_ok=True)
-        full_path = os.path.join(self.DB_DIRECTORY, self.DB_NAME)
-        self.conn = sqlite3.connect(full_path)
+        self.conn = sqlite3.connect(self.DB_PATH)
         self.initialize_tables()
 
     def table_exists(self, name):
@@ -48,8 +48,23 @@ class Database():
         self.conn.commit()
 
     def load_files(self):
+        cursor = self.conn.execute("SELECT * FROM saved_files")
+        saved_files = cursor.fetchall()
+
+        cursor = self.conn.execute("SELECT * FROM unsaved_files")
+        unsaved_files = cursor.fetchall()
         
-        return
+        file_list = [None] * (len(saved_files) + len(unsaved_files))
+
+        for file in saved_files:
+            path, rank = file
+            file_list[rank] = SavedFile(path, rank)
+
+        for file in unsaved_files:
+            content, rank = file
+            file_list[rank] = UnsavedFile(content, rank)
+        
+        return file_list
     
     def insert_saved(self, file):
         self.conn.execute("INSERT INTO saved_files (PATH, RANK) VALUES (?, ?)", (file.path, file.rank))
@@ -72,13 +87,8 @@ class Database():
     def close(self):
         self.conn.close()
 
-    def load_settings(self, settings):
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT * FROM settings LIMIT 1")
+    def load_settings(self):
+        cursor = self.conn.execute("SELECT * FROM settings LIMIT 1")
         info = cursor.fetchone() 
-
-        if info:
-            colour, font_type, font_size = info
-            settings.colour = colour
-            settings.font_type = font_type
-            settings.font_size = font_size
+        return info 
+    

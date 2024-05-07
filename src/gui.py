@@ -28,8 +28,16 @@ class GUIManager:
     def new_file_window():
         return 
 
+    def update_settings(self, data):
+        if data:
+            colour, font_type, font_size = data
+            self.settings.colour = colour
+            self.settings.font_type = font_type
+            self.settings.font_size = font_size
+        return
+
     def start(self):
-        self.database.load_settings(self.settings)
+        self.update_settings(self.database.load_settings()) 
         self.initialize_gui()
         self.gui.mainloop()
 
@@ -66,6 +74,13 @@ class GUIManager:
         menubar.add_cascade(label="Edit", menu=edit_menu)
         menubar.add_cascade(label="Settings", menu=settings_menu)
 
+        file_list = self.database.load_files()
+
+        for file in file_list:
+            print(file)
+
+        
+
         # notebook = ttk.Notebook(gui)
         # notebook.pack(expand=1, fill="both")
 
@@ -85,4 +100,3 @@ class GUIManager:
 
         # notebook.add(codeview1)
         # notebook.add(codeview2)
-        return
