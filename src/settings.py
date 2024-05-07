@@ -7,7 +7,8 @@ class Settings:
     colour: str = "monokai"
     font_type: str = "Consolas"
     font_size: int = 12
-    SETTINGS_PATH: str = "./settings.json"
+
+    
 
     # def load(self):
     #     try:

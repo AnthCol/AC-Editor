@@ -19,11 +19,6 @@ class GUIManager:
             icon = ImageTk.PhotoImage(image)
         return icon
 
-    def close_window(self):
-        # FIXME need to add saving for files here 
-        self.database.rewrite(self.settings)
-        self.gui.destroy()
-
     def create_submenu(menubar, labels):
         submenu = tk.Menu(menubar, tearoff="off")
         for label in labels:
@@ -33,27 +28,31 @@ class GUIManager:
     def new_file_window():
         return 
 
-    def run(self):
+    def start(self):
+        self.database.load_settings(self.settings)
+        self.initialize_gui()
         self.gui.mainloop()
+
+    def end(self, file_info):
+        self.database.rewrite(self.settings, file_info)
+        self.database.close()
+        self.gui.destroy()
 
     def initialize_gui(self):
         LOGO_LOCATION = "./images/logo.png"
         TITLE = "ac_editor"
         DEFAULT_LEXER = pygments.lexers.CLexer()
 
-        self.settings.load()
-
         self.gui.title(TITLE)
         self.gui.wm_iconphoto(False, self.make_icon(LOGO_LOCATION))
-        self.gui.protocol("WM_DELETE_WINDOW", lambda: self.close_window(self.gui, self.settings))
+        self.gui.protocol("WM_DELETE_WINDOW", self.end)
 
+        codeview = CodeView(self.gui, 
+                            lexer=DEFAULT_LEXER, 
+                            color_scheme=self.settings.colour, 
+                            font=(self.settings.font_type, self.settings.font_size))
 
-        # codeview = CodeView(gui, 
-        #                     lexer=DEFAULT_LEXER, 
-        #                     color_scheme=settings.colour, 
-        #                     font=(settings.font_type, settings.font_size))
-
-        # codeview.pack(fill="both", expand=True)     
+        codeview.pack(fill="both", expand=True)     
         
         menubar = tk.Menu(self.gui)
 
@@ -70,12 +69,12 @@ class GUIManager:
         # notebook = ttk.Notebook(gui)
         # notebook.pack(expand=1, fill="both")
 
-        codeview1 = CodeView(self.gui, 
-                            lexer=DEFAULT_LEXER, 
-                            color_scheme=self.settings.colour, 
-                            font=(self.settings.font_type, self.settings.font_size))
+        # codeview1 = CodeView(self.gui, 
+        #                     lexer=DEFAULT_LEXER, 
+        #                     color_scheme=self.settings.colour, 
+        #                     font=(self.settings.font_type, self.settings.font_size))
 
-        codeview1.pack(fill="both", expand=True)     
+        # codeview1.pack(fill="both", expand=True)     
 
         # codeview2 = CodeView(gui, 
         #                     lexer=DEFAULT_LEXER, 
@@ -86,5 +85,4 @@ class GUIManager:
 
         # notebook.add(codeview1)
         # notebook.add(codeview2)
-
-        return gui
+        return
