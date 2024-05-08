@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from file_datatypes import SavedFile, UnsavedFile
+from .file_datatypes import SavedFile, UnsavedFile
 
 
 class Database():
