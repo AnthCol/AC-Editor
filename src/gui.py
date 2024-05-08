@@ -12,18 +12,18 @@ class GUIManager:
         self.settings = settings
         self.database = database
 
-    def make_icon(path):
+    def make_icon(self, path):
         with Image.open(path) as image:
             icon = ImageTk.PhotoImage(image)
         return icon
 
-    def create_submenu(menubar, labels):
+    def create_submenu(self, menubar, labels):
         submenu = tk.Menu(menubar, tearoff="off")
         for label in labels:
             submenu.add_command(label=label)
         return submenu
 
-    def new_file_window():
+    def new_file_window(self):
         return 
 
     def update_settings(self, data):
@@ -39,8 +39,8 @@ class GUIManager:
         self.initialize_gui()
         self.gui.mainloop()
 
-    def end(self, file_info):
-        self.database.save_files(file_info)
+    def end(self, file_info): 
+        #self.database.save_files(file_info)
         self.database.close()
         self.gui.destroy()
 
@@ -51,7 +51,7 @@ class GUIManager:
 
         self.gui.title(TITLE)
         self.gui.wm_iconphoto(False, self.make_icon(LOGO_LOCATION))
-        self.gui.protocol("WM_DELETE_WINDOW", self.end)
+        self.gui.protocol("WM_DELETE_WINDOW", lambda: self.end(None))
 
         codeview = CodeView(self.gui, 
                             lexer=DEFAULT_LEXER, 

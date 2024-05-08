@@ -20,7 +20,8 @@ class Database():
         if (not self.table_exists(name)):
             self.conn.execute(table)
         else:
-            self.conn.execute("TRUNCATE TABLE ?", (name,))
+            # Not injection - function not called based on user input
+            self.conn.execute("DELETE FROM " + name)
 
     def initialize_tables(self):
         settings =      """ CREATE TABLE settings
