@@ -81,7 +81,8 @@ class Database():
                 self.insert_unsaved(file)
         self.conn.commit()
 
-    def close(self):
+    def close(self, file_info):
+        self.save_files(file_info)
         self.conn.close()
 
     def load_settings(self):

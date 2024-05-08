@@ -3,7 +3,7 @@ import pygments.lexers
 from tkinter import ttk
 from chlorophyll import CodeView
 from PIL import Image, ImageTk
-
+from .file_datatypes import SavedFile, UnsavedFile
 
 class GUIManager:
 
@@ -40,8 +40,7 @@ class GUIManager:
         self.gui.mainloop()
 
     def end(self, file_info): 
-        #self.database.save_files(file_info)
-        self.database.close()
+        self.database.close(file_info)
         self.gui.destroy()
 
     def initialize_gui(self):
@@ -51,14 +50,14 @@ class GUIManager:
 
         self.gui.title(TITLE)
         self.gui.wm_iconphoto(False, self.make_icon(LOGO_LOCATION))
-        self.gui.protocol("WM_DELETE_WINDOW", lambda: self.end(None))
+        self.gui.protocol("WM_DELETE_WINDOW", lambda: self.end([]))
+ 
+        # codeview = CodeView(self.gui, 
+        #                     lexer=DEFAULT_LEXER, 
+        #                     color_scheme=self.settings.colour, 
+        #                     font=(self.settings.font_type, self.settings.font_size))
 
-        codeview = CodeView(self.gui, 
-                            lexer=DEFAULT_LEXER, 
-                            color_scheme=self.settings.colour, 
-                            font=(self.settings.font_type, self.settings.font_size))
-
-        codeview.pack(fill="both", expand=True)     
+        # codeview.pack(fill="both", expand=True)     
         
         menubar = tk.Menu(self.gui)
 
@@ -72,29 +71,26 @@ class GUIManager:
         menubar.add_cascade(label="Edit", menu=edit_menu)
         menubar.add_cascade(label="Settings", menu=settings_menu)
 
-        file_list = self.database.load_files()
+        #file_list = self.database.load_files()
 
-        for file in file_list:
-            print(file)
+        # notebook = ttk.Notebook(self.gui)
 
-        
+        # for file in file_list:
+        #     frame = ttk.Frame(notebook)
+        #     notebook.add(frame, text="Tab" + file.rank) 
+        #     codeview = CodeView(self.)
+        #     if isinstance(file, SavedFile):
+                        
+        #     elif isinstance(file, UnsavedFile):
 
-        # notebook = ttk.Notebook(gui)
-        # notebook.pack(expand=1, fill="both")
+        notebook = ttk.Notebook(self.gui)
+        frame1 = ttk.Frame(notebook)
+        text1 = tk.Text(frame1)
+        text1.pack()
+        frame2 = ttk.Frame(notebook)
+        text2 = tk.Text(frame2)
+        text2.pack()
+        notebook.add(frame1)
+        notebook.add(frame2)
+        notebook.pack(fill="both", expand=True)
 
-        # codeview1 = CodeView(self.gui, 
-        #                     lexer=DEFAULT_LEXER, 
-        #                     color_scheme=self.settings.colour, 
-        #                     font=(self.settings.font_type, self.settings.font_size))
-
-        # codeview1.pack(fill="both", expand=True)     
-
-        # codeview2 = CodeView(gui, 
-        #                     lexer=DEFAULT_LEXER, 
-        #                     color_scheme=settings.colour, 
-        #                     font=(settings.font_type, settings.font_size))
-
-        # codeview2.pack(fill="both", expand=True)     
-
-        # notebook.add(codeview1)
-        # notebook.add(codeview2)
