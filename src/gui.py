@@ -42,7 +42,7 @@ class GUIManager:
         self.gui.mainloop()
 
     def end(self, file_info):
-        self.database.rewrite(self.settings, file_info)
+        self.database.save_files(file_info)
         self.database.close()
         self.gui.destroy()
 

@@ -80,10 +80,6 @@ class Database():
                 self.insert_unsaved(file)
         self.conn.commit()
 
-    def rewrite(self, file_info):
-        os.remove(self.DB_PATH)
-        self.save_files(file_info)
-
     def close(self):
         self.conn.close()
 
