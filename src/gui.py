@@ -84,8 +84,41 @@ class GUIManager:
             submenu.add_command(label=key, command=value)
         return submenu
 
-    def func(self):
-        print("test")
+    def new(self):
+        return
+
+    def open(self):
+        return
+
+    def save(self):
+        return
+    
+    def save_as(self):
+        return
+    
+    def rename(self):
+        return
+    
+    def cut(self):
+        return
+    
+    def copy(self):
+        return
+    
+    def paste(self):
+        return
+    
+    def select_all(self):
+        return
+    
+    def theme(self):
+        return
+    
+    def tab_size(self):
+        return
+    
+    def line_ending(self):
+        return
 
     def initialize_gui(self):
         LOGO_LOCATION = "./images/logo.png"
@@ -100,24 +133,24 @@ class GUIManager:
         self.gui.config(menu=menubar)
 
         file_map = {
-            "New" : self.func, 
-            "Open" : self.func, 
-            "Save" : self.func, 
-            "Save as" : self.func, 
-            "Rename" :self.func
+            "New" : self.new, 
+            "Open" : self.open, 
+            "Save" : self.save, 
+            "Save as" : self.save_as, 
+            "Rename" : self.rename
         }
 
         edit_map = {
-            "Cut" : self.func, 
-            "Copy" : self.func, 
-            "Paste" : self.func, 
-            "Select All" : self.func
+            "Cut" : self.cut, 
+            "Copy" : self.copy, 
+            "Paste" : self.paste, 
+            "Select All" : self.select_all
         }
 
         settings_map = {
-            "Theme" : self.func, 
-            "Tab Size" : self.func, 
-            "Line Endings" : self.func
+            "Theme" : self.theme,
+            "Tab Size" : self.tab_size,
+            "Line Endings" : self.line_endings
         }
 
         file_menu = self.create_submenu(menubar, file_map)
