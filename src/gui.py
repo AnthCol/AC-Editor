@@ -5,6 +5,7 @@ from tkinter import ttk
 from chlorophyll import CodeView
 from PIL import Image, ImageTk
 from .file_datatypes import SavedFile, UnsavedFile
+from .code_container import CodeContainer
 
 class GUIManager:
 
@@ -12,7 +13,7 @@ class GUIManager:
         self.gui = gui
         self.settings = settings
         self.database = database
-        self.open_files = []
+        self.code_containers = []
 
     def make_icon(self, path):
         with Image.open(path) as image:
@@ -41,14 +42,24 @@ class GUIManager:
         self.initialize_gui()
         self.gui.mainloop()
 
+    # For now the intended functionality is the following
+    # Unsaved files will be "saved"
+    # Saved files (on the drivE) must be manually saved, else they will be loaded from memory
+
+    def update_files(self):
+        for container in self.code_containers:
+            if isinstance(container.file, UnsavedFile):
+                container.file.content = container.codeview.get("1.0", tk.END)
+
     def end(self): 
-        self.database.close(self.open_files)
+        self.update_files()
+        self.database.close([container.file for container in self.code_containers])
         self.gui.destroy()
 
     def get_filename(self, file):
         if isinstance(file, SavedFile):
             return os.path.basename(file.path)
-        elif isinstance(file, UnsavedFile):
+        if isinstance(file, UnsavedFile):
             return "New " + str(file.rank)
 
     def make_frame(self, notebook, file):
@@ -58,6 +69,7 @@ class GUIManager:
                             color_scheme=self.settings.colour,
                             font=(self.settings.font_type, self.settings.font_size))
 
+        # FIXME add more error checking later
         if isinstance(file, SavedFile):
             with open(file.path) as f:
                 content = f.read()
@@ -66,6 +78,9 @@ class GUIManager:
             codeview.insert(tk.END, file.content)
 
         codeview.pack(fill="both", expand=True)
+
+        self.code_containers.append(CodeContainer(file=file, codeview=codeview))
+
         return frame
 
     def initialize_gui(self):
@@ -101,3 +116,4 @@ class GUIManager:
             notebook.add(self.make_frame(notebook, file), text=self.pad(filename))
 
         notebook.pack(fill="both", expand=True)
+

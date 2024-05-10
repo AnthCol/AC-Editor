@@ -10,19 +10,18 @@ class Database():
     def __init__(self):
         os.makedirs(self.DB_DIRECTORY, exist_ok=True)
         self.conn = sqlite3.connect(self.DB_PATH)
-        # Tables get deleted before the 
-        # self.initialize_tables()
+        self.initialize_tables()
 
     def table_exists(self, name):
         fetch_table = self.conn.execute("SELECT name FROM sqlite_master WHERE name = ?", (name,))
         return fetch_table.fetchone() != None
 
-    def prepare_table(self, table, name):
+    def create_table(self, table, name):
         if (not self.table_exists(name)):
             self.conn.execute(table)
-        else:
-            # Not injection - function not called based on user input
-            self.conn.execute("DELETE FROM " + name)
+
+    def clear_table(self, name):
+        self.conn.execute("DELETE FROM " + name)
 
     def initialize_tables(self):
         settings =      """ CREATE TABLE settings
@@ -44,9 +43,9 @@ class Database():
                                 RANK    INTEGER NOT NULL
                             )
                         """
-        self.prepare_table(settings, "settings")
-        self.prepare_table(saved_files, "saved_files")
-        self.prepare_table(unsaved_files, "unsaved_files")
+        self.create_table(settings, "settings")
+        self.create_table(saved_files, "saved_files")
+        self.create_table(unsaved_files, "unsaved_files")
         self.conn.commit()
 
     def load_files(self):
@@ -69,7 +68,9 @@ class Database():
         for file in unsaved_files:
             content, rank = file
             file_list[rank - 1] = UnsavedFile(content, rank)
-        
+
+        print("printing file_list: " + str(file_list))
+
         return file_list
     
     def insert_saved(self, file):
@@ -79,12 +80,15 @@ class Database():
         self.conn.execute("INSERT INTO unsaved_files (CONTENT, RANK) VALUES (?, ?)", (file.content, file.rank))
 
     def save_files(self, file_info):
-        self.initialize_tables()
+        self.clear_table("saved_files")
+        self.clear_table("unsaved_files")
+
         for file in file_info:
             if isinstance(file, SavedFile):
                 self.insert_saved(file)
             elif isinstance(file, UnsavedFile):
                 self.insert_unsaved(file)
+        
         self.conn.commit()
 
     def close(self, file_info):
