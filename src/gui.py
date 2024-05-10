@@ -20,11 +20,6 @@ class GUIManager:
             icon = ImageTk.PhotoImage(image)
         return icon
 
-    def create_submenu(self, menubar, labels):
-        submenu = tk.Menu(menubar, tearoff="off")
-        for label in labels:
-            submenu.add_command(label=label)
-        return submenu
 
     def update_settings(self, data):
         if data:
@@ -49,7 +44,7 @@ class GUIManager:
     def update_files(self):
         for container in self.code_containers:
             if isinstance(container.file, UnsavedFile):
-                container.file.content = container.codeview.get("1.0", tk.END)
+                container.file.content = container.codeview.get("1.0", "end-1c")
 
     def end(self): 
         self.update_files()
@@ -83,6 +78,15 @@ class GUIManager:
 
         return frame
 
+    def create_submenu(self, menubar, map):
+        submenu = tk.Menu(menubar, tearoff="off")
+        for key, value in map.items():
+            submenu.add_command(label=key, command=value)
+        return submenu
+
+    def func(self):
+        print("test")
+
     def initialize_gui(self):
         LOGO_LOCATION = "./images/logo.png"
         TITLE = "ac_editor"
@@ -95,9 +99,30 @@ class GUIManager:
 
         self.gui.config(menu=menubar)
 
-        file_menu = self.create_submenu(menubar, ["New", "Open", "Save As", "Rename"]) 
-        edit_menu = self.create_submenu(menubar, ["Cut", "Copy", "Paste", "Select All"])
-        settings_menu = self.create_submenu(menubar, ["Theme", "Tab Size", "Line Endings"])
+        file_map = {
+            "New" : self.func, 
+            "Open" : self.func, 
+            "Save" : self.func, 
+            "Save as" : self.func, 
+            "Rename" :self.func
+        }
+
+        edit_map = {
+            "Cut" : self.func, 
+            "Copy" : self.func, 
+            "Paste" : self.func, 
+            "Select All" : self.func
+        }
+
+        settings_map = {
+            "Theme" : self.func, 
+            "Tab Size" : self.func, 
+            "Line Endings" : self.func
+        }
+
+        file_menu = self.create_submenu(menubar, file_map)
+        edit_menu = self.create_submenu(menubar, edit_map)
+        settings_menu = self.create_submenu(menubar, settings_map)
 
         menubar.add_cascade(label="File", menu=file_menu)
         menubar.add_cascade(label="Edit", menu=edit_menu)
