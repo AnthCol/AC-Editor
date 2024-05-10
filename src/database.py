@@ -8,16 +8,16 @@ class Database():
     DB_PATH = "./database/editor_data.db"
 
     def __init__(self):
-        print(os.getcwd())
         os.makedirs(self.DB_DIRECTORY, exist_ok=True)
         self.conn = sqlite3.connect(self.DB_PATH)
-        self.initialize_tables()
+        # Tables get deleted before the 
+        # self.initialize_tables()
 
     def table_exists(self, name):
         fetch_table = self.conn.execute("SELECT name FROM sqlite_master WHERE name = ?", (name,))
         return fetch_table.fetchone() != None
 
-    def prepare_table(self, name, table):
+    def prepare_table(self, table, name):
         if (not self.table_exists(name)):
             self.conn.execute(table)
         else:
@@ -44,9 +44,9 @@ class Database():
                                 RANK    INTEGER NOT NULL
                             )
                         """
-        self.prepare_table("settings", settings)
-        self.prepare_table("saved_files", saved_files)
-        self.prepare_table("unsaved_files", unsaved_files)
+        self.prepare_table(settings, "settings")
+        self.prepare_table(saved_files, "saved_files")
+        self.prepare_table(unsaved_files, "unsaved_files")
         self.conn.commit()
 
     def load_files(self):
@@ -58,13 +58,17 @@ class Database():
         
         file_list = [None] * (len(saved_files) + len(unsaved_files))
 
+        print(saved_files)
+        print(unsaved_files)
+
+        # Rank starts at 1, indices start at 0
         for file in saved_files:
             path, rank = file
-            file_list[rank] = SavedFile(path, rank)
+            file_list[rank - 1] = SavedFile(path, rank)
 
         for file in unsaved_files:
             content, rank = file
-            file_list[rank] = UnsavedFile(content, rank)
+            file_list[rank - 1] = UnsavedFile(content, rank)
         
         return file_list
     
@@ -75,6 +79,7 @@ class Database():
         self.conn.execute("INSERT INTO unsaved_files (CONTENT, RANK) VALUES (?, ?)", (file.content, file.rank))
 
     def save_files(self, file_info):
+        self.initialize_tables()
         for file in file_info:
             if isinstance(file, SavedFile):
                 self.insert_saved(file)
