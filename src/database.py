@@ -4,10 +4,11 @@ from .file_datatypes import SavedFile, UnsavedFile
 
 
 class Database():
-    DB_DIRECTORY = "../database/"
-    DB_PATH = "../database/editor_data.db"
+    DB_DIRECTORY = "./database/"
+    DB_PATH = "./database/editor_data.db"
 
     def __init__(self):
+        print(os.getcwd())
         os.makedirs(self.DB_DIRECTORY, exist_ok=True)
         self.conn = sqlite3.connect(self.DB_PATH)
         self.initialize_tables()

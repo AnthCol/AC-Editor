@@ -41,17 +41,15 @@ class GUIManager:
         self.initialize_gui()
         self.gui.mainloop()
 
-    def end(self, file_info): 
-        self.database.close(file_info)
+    def end(self): 
+        self.database.close(self.open_files)
         self.gui.destroy()
 
-
     def get_filename(self, file):
-
         if isinstance(file, SavedFile):
             return os.path.basename(file.path)
         elif isinstance(file, UnsavedFile):
-            return "New " + file.rank
+            return "New " + str(file.rank)
 
     def make_frame(self, notebook, file):
         frame = ttk.Frame(notebook)
@@ -61,21 +59,22 @@ class GUIManager:
                             font=(self.settings.font_type, self.settings.font_size))
 
         if isinstance(file, SavedFile):
-            "" 
-        elif isinstance(file, UnsavedFile):
-            ""
-        codeview.pack(fill="both", expand=True)
+            with open(file.path) as f:
+                content = f.read()
+            codeview.insert(tk.END, content)     
+        elif isinstance(file, UnsavedFile): 
+            codeview.insert(tk.END, file.content)
 
+        codeview.pack(fill="both", expand=True)
         return frame
 
     def initialize_gui(self):
         LOGO_LOCATION = "./images/logo.png"
         TITLE = "ac_editor"
-        #DEFAULT_LEXER = pygments.lexers.CLexer()
 
         self.gui.title(TITLE)
         self.gui.wm_iconphoto(False, self.make_icon(LOGO_LOCATION))
-        self.gui.protocol("WM_DELETE_WINDOW", lambda: self.end([]))
+        self.gui.protocol("WM_DELETE_WINDOW", self.end)
  
         menubar = tk.Menu(self.gui)
 
@@ -89,45 +88,16 @@ class GUIManager:
         menubar.add_cascade(label="Edit", menu=edit_menu)
         menubar.add_cascade(label="Settings", menu=settings_menu)
 
-        file_list = self.database.load_files()
-
         notebook = ttk.Notebook(self.gui)
 
-        for file in file_list:
+        self.open_files = self.database.load_files()
+
+        # If there are no files to open, make a blank one always. 
+        if len(self.open_files) == 0:
+            self.open_files.append(UnsavedFile("", 1))
+
+        for file in self.open_files:
             filename = self.get_filename(file)
-            notebook.add(self.make_frame(file), text=self.pad(filename))
-
-            # frame = ttk.Frame(notebook)
-            # codeview = CodeView(frame,
-            #                     color_scheme=self.settings.colour,
-            #                     font=(self.settings.font_type, self.settings.font_size))
-            # codeview.pack(fill="both", expand=True)
-            # notebook.add(frame, text=self.pad(filename))
+            notebook.add(self.make_frame(notebook, file), text=self.pad(filename))
 
         notebook.pack(fill="both", expand=True)
-        # for file in file_list:
-        #     frame = ttk.Frame(notebook)
-        #     notebook.add(frame, text="Tab" + file.rank) 
-        #     codeview = CodeView(self.)
-        #     if isinstance(file, SavedFile):
-                        
-        #     elif isinstance(file, UnsavedFile):
-
-        frame1 = ttk.Frame(notebook)
-        codeview1 = CodeView(frame1, 
-                            color_scheme=self.settings.colour, 
-                            font=(self.settings.font_type, self.settings.font_size))
-        codeview1.pack(fill="both", expand=True)
-
-
-        frame2 = ttk.Frame(notebook)
-        codeview2 = CodeView(frame2, 
-                            color_scheme=self.settings.colour, 
-                            font=(self.settings.font_type, self.settings.font_size))
-        codeview2.pack(fill="both", expand=True)
-
-
-        notebook.add(frame1, text=self.pad("New 1"))
-        notebook.add(frame2, text=self.pad("New 2"))
-        notebook.pack(fill="both", expand=True)
-
