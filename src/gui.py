@@ -11,6 +11,7 @@ class GUIManager:
 
     def __init__(self, gui, settings, database):
         self.gui = gui
+        self.notebook = ttk.Notebook(self.gui)
         self.settings = settings
         self.database = database
         self.code_containers = []
@@ -57,8 +58,8 @@ class GUIManager:
         if isinstance(file, UnsavedFile):
             return "New " + str(file.rank)
 
-    def make_frame(self, notebook, file):
-        frame = ttk.Frame(notebook)
+    def make_frame(self, file):
+        frame = ttk.Frame(self.notebook)
 
         codeview = CodeView(frame,
                             color_scheme=self.settings.colour,
@@ -92,7 +93,15 @@ class GUIManager:
 
     def open(self):
         filename = filedialog.askopenfilename()
+        file = SavedFile(filename, len(self.code_containers))
+        self.notebook.add(self.make_frame(file), text=self.pad(self.get_filename(file)))
+        self.notebook.select(self.notebook.index("end") - 1)
+        self.notebook.pack(fill="both", expand=True)
+
+    def close(self):
+
         return
+
 
     def save(self):
 
@@ -140,7 +149,8 @@ class GUIManager:
 
         file_map = {
             "New" : self.new, 
-            "Open" : self.open, 
+            "Open" : self.open,
+            "Close" : self.close, 
             "Save" : self.save, 
             "Save as" : self.save_as, 
             "Rename" : self.rename
@@ -167,7 +177,6 @@ class GUIManager:
         menubar.add_cascade(label="Edit", menu=edit_menu)
         menubar.add_cascade(label="Settings", menu=settings_menu)
 
-        notebook = ttk.Notebook(self.gui)
 
         self.open_files = self.database.load_files()
 
@@ -177,7 +186,7 @@ class GUIManager:
 
         for file in self.open_files:
             filename = self.get_filename(file)
-            notebook.add(self.make_frame(notebook, file), text=self.pad(filename))
+            self.notebook.add(self.make_frame(file), text=self.pad(filename))
 
-        notebook.pack(fill="both", expand=True)
+        self.notebook.pack(fill="both", expand=True)
 
