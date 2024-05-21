@@ -1,7 +1,7 @@
 import tkinter as tk
 import os
 import pygments.lexers 
-from tkinter import ttk
+from tkinter import ttk, filedialog
 from chlorophyll import CodeView
 from PIL import Image, ImageTk
 from .file_datatypes import SavedFile, UnsavedFile
@@ -85,12 +85,17 @@ class GUIManager:
         return submenu
 
     def new(self):
+        # Open filedialog to save the file 
+        # Name the file in the filedialog
+        # Save it somewhere 
         return
 
     def open(self):
+        filename = filedialog.askopenfilename()
         return
 
     def save(self):
+
         return
     
     def save_as(self):
@@ -98,7 +103,8 @@ class GUIManager:
     
     def rename(self):
         return
-    
+
+    # Might not bother implementing these we will see  
     def cut(self):
         return
     
@@ -117,7 +123,7 @@ class GUIManager:
     def tab_size(self):
         return
     
-    def line_ending(self):
+    def line_endings(self):
         return
 
     def initialize_gui(self):

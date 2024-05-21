@@ -20,6 +20,7 @@ class Database():
         if (not self.table_exists(name)):
             self.conn.execute(table)
 
+    # Note injection, hardcoded function calls. 
     def clear_table(self, name):
         self.conn.execute("DELETE FROM " + name)
 
