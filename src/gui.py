@@ -40,23 +40,22 @@ class GUIManager:
 
     # For now the intended functionality is the following
     # Unsaved files will be "saved"
-    # Saved files (on the drivE) must be manually saved, else they will be loaded from memory
-
+    # Saved files (on the drive) must be manually saved, else they will be loaded from memory
     def update_files(self): 
-        # Go through files, then what?
         for container in self.code_containers:
             if isinstance(container.file, UnsavedFile):
                 container.file.content = container.codeview.get("1.0", "end-1c")
-            elif isinstance(container.file, SavedFile):
-                content = container.file.content = container.codeview.get("1.0", "end-1c")
-                with open(container.file.path) as f:
-                    f.write(content)
+            # FIXME 
+            # Will have some situation where there is a SavedFile object, that
+            # needs to be saved 
+
+            # elif isinstance(container.file, SavedFile):
+            #     content = container.file.content = container.codeview.get("1.0", "end-1c")
+            #     with open(container.file.path, "w") as f:
+            #         f.write(content)
 
     def end(self): 
-
         # For file in notebook, update content 
-
-
         self.update_files()
         self.database.close([container.file for container in self.code_containers])
         self.gui.destroy()
@@ -95,6 +94,7 @@ class GUIManager:
         return submenu
 
     def new(self):
+
         # Open filedialog to save the file 
         # Name the file in the filedialog
         # Save it somewhere 
@@ -102,29 +102,28 @@ class GUIManager:
 
     def open(self):
         filename = filedialog.askopenfilename()
-        # The rank can be the number of 
         file = SavedFile(filename, len(self.code_containers))
         self.notebook.add(self.make_frame(file), text=self.pad(self.get_filename(file)))
         self.notebook.select(self.notebook.index("end") - 1)
-        #self.notebook.pack(fill="both", expand=True)
 
     def close(self):
-        # Remove from CodeContainers
-        # Remove from Notebook
-        for container in self.code_containers:
-            if (container == self.notebook.select()):
-                print("found")
-        print(self.code_containers)
-
-        self.notebook.forget(self.notebook.select())
-        #self.notebook.pack(file="both", expan)
-        return
-
+        # If unsaved FIXME
+        index = self.notebook.index(self.notebook.select())
+        del self.code_containers[index]
+        self.notebook.forget(index)
 
     def save(self):
+        index = self.notebook.index(self.notebook.select())
+        container = self.code_containers[index]
+        if isinstance(container.file, SavedFile):
+            with open(container.file.path, "w") as f:
+                f.write(container.codeview.get("1.0", "end-1c"))
+        elif isinstance(container.file, UnsavedFile):
+            print("temp")
+            # Open Save dialogue for unsaved file. 
+            # Should be the same code as new. 
 
-        self.notebook.select()
-        
+
         return
     
     def save_as(self):
