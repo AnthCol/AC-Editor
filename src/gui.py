@@ -42,12 +42,21 @@ class GUIManager:
     # Unsaved files will be "saved"
     # Saved files (on the drivE) must be manually saved, else they will be loaded from memory
 
-    def update_files(self):
+    def update_files(self): 
+        # Go through files, then what?
         for container in self.code_containers:
             if isinstance(container.file, UnsavedFile):
                 container.file.content = container.codeview.get("1.0", "end-1c")
+            elif isinstance(container.file, SavedFile):
+                content = container.file.content = container.codeview.get("1.0", "end-1c")
+                with open(container.file.path) as f:
+                    f.write(content)
 
     def end(self): 
+
+        # For file in notebook, update content 
+
+
         self.update_files()
         self.database.close([container.file for container in self.code_containers])
         self.gui.destroy()
@@ -93,18 +102,29 @@ class GUIManager:
 
     def open(self):
         filename = filedialog.askopenfilename()
+        # The rank can be the number of 
         file = SavedFile(filename, len(self.code_containers))
         self.notebook.add(self.make_frame(file), text=self.pad(self.get_filename(file)))
         self.notebook.select(self.notebook.index("end") - 1)
-        self.notebook.pack(fill="both", expand=True)
+        #self.notebook.pack(fill="both", expand=True)
 
     def close(self):
+        # Remove from CodeContainers
+        # Remove from Notebook
+        for container in self.code_containers:
+            if (container == self.notebook.select()):
+                print("found")
+        print(self.code_containers)
 
+        self.notebook.forget(self.notebook.select())
+        #self.notebook.pack(file="both", expan)
         return
 
 
     def save(self):
 
+        self.notebook.select()
+        
         return
     
     def save_as(self):
@@ -177,16 +197,18 @@ class GUIManager:
         menubar.add_cascade(label="Edit", menu=edit_menu)
         menubar.add_cascade(label="Settings", menu=settings_menu)
 
-
         self.open_files = self.database.load_files()
-
+ 
         # If there are no files to open, make a blank one always. 
         if len(self.open_files) == 0:
             self.open_files.append(UnsavedFile("", 1))
 
         for file in self.open_files:
             filename = self.get_filename(file)
-            self.notebook.add(self.make_frame(file), text=self.pad(filename))
+            if isinstance(file, UnsavedFile):
+                self.notebook.add(self.make_frame(file), text=self.pad(filename))
+            elif isinstance(file, SavedFile) and os.path.isfile(file.path):
+                self.notebook.add(self.make_frame(file), text=self.pad(filename))
 
         self.notebook.pack(fill="both", expand=True)
 
