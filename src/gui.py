@@ -36,7 +36,13 @@ class GUIManager:
     def start(self):
         self.update_settings(self.database.load_settings()) 
         self.initialize_gui()
+        self.set_shortcuts()
         self.gui.mainloop()
+
+
+    def set_shortcuts(self):
+        self.gui.bind("<Control-s>", self.save)
+    
 
     # For now the intended functionality is the following
     # Unsaved files will be "saved"
@@ -125,7 +131,7 @@ class GUIManager:
             self.new()
 
 
-    def save(self):
+    def save(self, event=None):
         index = self.notebook.index(self.notebook.select())
         container = self.code_containers[index]
         if isinstance(container.file, SavedFile):
