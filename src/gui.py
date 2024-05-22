@@ -21,7 +21,6 @@ class GUIManager:
             icon = ImageTk.PhotoImage(image)
         return icon
 
-
     def update_settings(self, data):
         if data:
             colour, font_type, font_size = data
@@ -94,8 +93,10 @@ class GUIManager:
         return submenu
 
     def new(self):
-
-
+        unsaved_rank = sum(1 for c in self.code_containers if isinstance(c.file, UnsavedFile))
+        file = UnsavedFile("", len(self.code_containers))
+        self.notebook.add(self.make_frame(file), text=self.pad("New " + str(unsaved_rank + 1)))
+        self.notebook.select(self.notebook.index("end") - 1)
         return
 
     def open(self):
@@ -139,6 +140,17 @@ class GUIManager:
             # write data to it. 
 
     def rename(self):
+        index = self.notebook.index(self.notebook.select())
+        file = self.code_containers[index].file
+        if isinstance(file, SavedFile):
+            print("test")
+            # Plan: open small window
+            # Ask the user to type in the filename
+            # boom
+            #os.rename(file.path, )
+        else:
+            print("ERROR renaming UnsavedFile")
+
         return
 
     # Might not bother implementing these we will see  
