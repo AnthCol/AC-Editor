@@ -55,7 +55,7 @@ class Database():
 
         cursor = self.conn.execute("SELECT * FROM unsaved_files")
         unsaved_files = cursor.fetchall()
-        
+
         file_list = [None] * (len(saved_files) + len(unsaved_files))
 
         print(saved_files)

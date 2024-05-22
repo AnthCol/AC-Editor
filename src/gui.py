@@ -148,19 +148,22 @@ class GUIManager:
             # create file with OS
             # write data to it. 
 
-    def rename(self):
-        index = self.notebook.index(self.notebook.select())
-        file = self.code_containers[index].file
-        if isinstance(file, SavedFile):
-            print("test")
-            # Plan: open small window
-            # Ask the user to type in the filename
-            # boom
-            #os.rename(file.path, )
-        else:
-            print("ERROR renaming UnsavedFile")
+    # Why bother with this when we have save as???
+    # def rename(self):
+    #     index = self.notebook.index(self.notebook.select())
+    #     file = self.code_containers[index].file
+    #     if isinstance(file, SavedFile):
+    #         file.path = 
+    #         self.notebook.tab(index, text=self.pad(self.get_filename(file)))
 
-        return
+    #         # Plan: open small window
+    #         # Ask the user to type in the filename
+    #         # boom
+    #         #os.rename(file.path, )
+    #     else:
+    #         print("ERROR renaming UnsavedFile")
+
+    #     return
 
     # Might not bother implementing these we will see  
     def cut(self):
@@ -202,7 +205,7 @@ class GUIManager:
             "Close" : self.close, 
             "Save" : self.save, 
             "Save as" : self.save_as, 
-            "Rename" : self.rename
+            #"Rename" : self.rename
         }
 
         edit_map = {
