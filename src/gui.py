@@ -92,11 +92,20 @@ class GUIManager:
             submenu.add_command(label=key, command=value)
         return submenu
 
+    def last_page_index(self):
+        return self.notebook.index("end") - 1
+
+    def codeview_contents(self, codeview):
+        return codeview.get("1.0", "end-1c")
+
+    def show_latest_page(self):
+        self.notebook.select(self.last_page_index())
+
     def new(self):
-        unsaved_rank = sum(1 for c in self.code_containers if isinstance(c.file, UnsavedFile))
+        unsaved_rank = 1 + sum(1 for c in self.code_containers if isinstance(c.file, UnsavedFile))
         file = UnsavedFile("", len(self.code_containers))
-        self.notebook.add(self.make_frame(file), text=self.pad("New " + str(unsaved_rank + 1)))
-        self.notebook.select(self.notebook.index("end") - 1)
+        self.notebook.add(self.make_frame(file), text=self.pad("New " + str(unsaved_rank)))
+        self.show_latest_page()
         return
 
     def open(self):
@@ -104,7 +113,7 @@ class GUIManager:
         if filename != "":
             file = SavedFile(filename, len(self.code_containers) + 1)
             self.notebook.add(self.make_frame(file), text=self.pad(self.get_filename(file)))
-            self.notebook.select(self.notebook.index("end") - 1)
+            self.show_latest_page()
 
     def close(self):
         # If unsaved FIXME
@@ -117,7 +126,7 @@ class GUIManager:
         container = self.code_containers[index]
         if isinstance(container.file, SavedFile):
             with open(container.file.path, "w") as f:
-                f.write(container.codeview.get("1.0", "end-1c"))
+                f.write(self.codeview_contents(container.codeview))
         elif isinstance(container.file, UnsavedFile):
             # Open filedialog to save the file 
             # Name the file in the filedialog
@@ -135,7 +144,7 @@ class GUIManager:
             self.code_containers[index].file = new_saved
             self.notebook.tab(index, text=self.pad(self.get_filename(new_saved)))        
             with open(path, "w") as f:
-                f.write(self.code_containers[index].codeview.get("1.0", "end-1c"))
+                f.write(self.codeview_contents(self.code_containers[index].codeview))
             # create file with OS
             # write data to it. 
 
