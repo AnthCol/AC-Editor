@@ -95,16 +95,15 @@ class GUIManager:
 
     def new(self):
 
-        # Open filedialog to save the file 
-        # Name the file in the filedialog
-        # Save it somewhere 
+
         return
 
     def open(self):
         filename = filedialog.askopenfilename()
-        file = SavedFile(filename, len(self.code_containers))
-        self.notebook.add(self.make_frame(file), text=self.pad(self.get_filename(file)))
-        self.notebook.select(self.notebook.index("end") - 1)
+        if filename != "":
+            file = SavedFile(filename, len(self.code_containers) + 1)
+            self.notebook.add(self.make_frame(file), text=self.pad(self.get_filename(file)))
+            self.notebook.select(self.notebook.index("end") - 1)
 
     def close(self):
         # If unsaved FIXME
@@ -119,16 +118,26 @@ class GUIManager:
             with open(container.file.path, "w") as f:
                 f.write(container.codeview.get("1.0", "end-1c"))
         elif isinstance(container.file, UnsavedFile):
+            # Open filedialog to save the file 
+            # Name the file in the filedialog
+            # Save it somewhere 
             print("temp")
             # Open Save dialogue for unsaved file. 
             # Should be the same code as new. 
 
-
-        return
-    
     def save_as(self):
-        return
-    
+        path = filedialog.asksaveasfilename()
+        if path != "":
+            index = self.notebook.index(self.notebook.select())
+            old_unsaved = self.code_containers[index]
+            new_saved = SavedFile(path, old_unsaved.file.rank)
+            self.code_containers[index].file = new_saved
+            self.notebook.tab(index, text=self.pad(self.get_filename(new_saved)))        
+            with open(path, "w") as f:
+                f.write(self.code_containers[index].codeview.get("1.0", "end-1c"))
+            # create file with OS
+            # write data to it. 
+
     def rename(self):
         return
 

@@ -93,9 +93,8 @@ class Database():
         self.conn.commit()
 
     def close(self, file_info):
-        print("IN DATABASE PRINTING FILE INFO:")
-        print(file_info)
-
+        # print("IN DATABASE PRINTING FILE INFO:")
+        # print(file_info)
         self.save_files(file_info)
         self.conn.close()
 
