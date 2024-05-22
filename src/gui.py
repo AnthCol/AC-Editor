@@ -30,7 +30,8 @@ class GUIManager:
         return
 
     def pad(self, string):
-        return "    " + string + "    "
+        if string != None:
+            return "    " + string + "    "
 
     def start(self):
         self.update_settings(self.database.load_settings()) 
@@ -71,7 +72,7 @@ class GUIManager:
         codeview = CodeView(frame,
                             color_scheme=self.settings.colour,
                             font=(self.settings.font_type, self.settings.font_size))
-
+ 
         # FIXME add more error checking later
         if isinstance(file, SavedFile):
             with open(file.path) as f:
@@ -106,7 +107,6 @@ class GUIManager:
         file = UnsavedFile("", len(self.code_containers))
         self.notebook.add(self.make_frame(file), text=self.pad("New " + str(unsaved_rank)))
         self.show_latest_page()
-        return
 
     def open(self):
         filename = filedialog.askopenfilename()
@@ -120,6 +120,10 @@ class GUIManager:
         index = self.notebook.index(self.notebook.select())
         del self.code_containers[index]
         self.notebook.forget(index)
+
+        if len(self.code_containers) == 0:
+            self.new()
+
 
     def save(self):
         index = self.notebook.index(self.notebook.select())
@@ -228,6 +232,7 @@ class GUIManager:
         menubar.add_cascade(label="File", menu=file_menu)
         menubar.add_cascade(label="Edit", menu=edit_menu)
         menubar.add_cascade(label="Settings", menu=settings_menu)
+        menubar.add_cascade(label="Close", command=self.close)
 
         self.open_files = self.database.load_files()
  
