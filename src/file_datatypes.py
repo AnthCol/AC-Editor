@@ -1,5 +1,10 @@
 from dataclasses import dataclass
 
+# Path represents the file path that the program will load from
+# Content represents the 
+# Rank represents the order in which they are to be presented as tabs within the editor
+# Name represents the file name that is to be displayed on the tab in the editor
+
 @dataclass
 class SavedFile:
     path: str = None

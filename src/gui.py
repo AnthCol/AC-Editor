@@ -7,6 +7,13 @@ from PIL import Image, ImageTk
 from .file_datatypes import SavedFile, UnsavedFile
 from .code_container import CodeContainer
 
+
+# FIXME
+# With the amount of references to self here, it may be best to just not do the OOP stuff since this is just 
+# turning into one massive class. 
+# Future problem though. 
+
+
 class GUIManager:
 
     def __init__(self, gui, settings, database):
@@ -48,9 +55,14 @@ class GUIManager:
     # Unsaved files will be "saved"
     # Saved files (on the drive) must be manually saved, else they will be loaded from memory
     def update_files(self): 
+        rank_counter = 1
         for container in self.code_containers:
             if isinstance(container.file, UnsavedFile):
                 container.file.content = container.codeview.get("1.0", "end-1c")
+            container.file.rank = rank_counter
+            rank_counter += 1
+
+
             # FIXME 
             # Will have some situation where there is a SavedFile object, that
             # needs to be saved 
@@ -66,12 +78,6 @@ class GUIManager:
         self.database.close([container.file for container in self.code_containers], self.settings)
         self.gui.destroy()
 
-    def get_filename(self, file):
-        if isinstance(file, SavedFile):
-            return os.path.basename(file.path)
-        if isinstance(file, UnsavedFile):
-            return "New " + str(file.rank)
-
     def make_frame(self, file):
         frame = ttk.Frame(self.notebook)
 
@@ -83,7 +89,6 @@ class GUIManager:
         if isinstance(file, SavedFile):
             with open(file.path) as f:
                 content = f.read()
-            print(content)
             codeview.insert(tk.END, content)     
         elif isinstance(file, UnsavedFile): 
             codeview.insert(tk.END, file.content)
@@ -116,16 +121,15 @@ class GUIManager:
         return 1 + len(self.code_containers)
 
     def new(self):
-        unsaved_rank = unsaved_rank()
-        file = UnsavedFile("", len(self.code_containers))
-        self.notebook.add(self.make_frame(file), text=self.pad("New " + str(unsaved_rank)))
+        file = UnsavedFile("", len(self.code_containers), "New " + str(self.unsaved_rank()))
+        self.notebook.add(self.make_frame(file), text=self.pad(file.name))
         self.show_latest_page()
 
     def open(self):
-        filename = filedialog.askopenfilename()
-        if filename != "":
-            file = SavedFile(filename, self.determine_rank())
-            self.notebook.add(self.make_frame(file), text=self.pad(self.get_filename(file)))
+        path = filedialog.askopenfilename()
+        if path != "":
+            file = SavedFile(path, self.determine_rank(), os.path.basename(path))
+            self.notebook.add(self.make_frame(file), text=self.pad(file.name))
             self.show_latest_page()
 
     def close(self):
@@ -157,7 +161,7 @@ class GUIManager:
         if path != "":
             index = self.notebook.index(self.notebook.select())
             old_unsaved = self.code_containers[index]
-            new_saved = SavedFile(path=path, rank=old_unsaved.file.rank, name=os.path.basename(path)) 
+            new_saved = SavedFile(path, old_unsaved.file.rank, os.path.basename(path)) 
             self.code_containers[index].file = new_saved
             self.notebook.tab(index, text=self.pad(new_saved.name))        
             with open(path, "w") as f:
@@ -233,14 +237,13 @@ class GUIManager:
  
         # If there are no files to open (only happens in the case of fresh DB), make a blank one always. 
         if len(open_files) == 0:
-            open_files.append(UnsavedFile("", 1))
+            open_files.append(UnsavedFile("", 1, "New 1"))
 
         for file in open_files:
-            filename = self.get_filename(file)
             if isinstance(file, UnsavedFile):
-                self.notebook.add(self.make_frame(file), text=self.pad(filename))
+                self.notebook.add(self.make_frame(file), text=self.pad(file.name))
             elif isinstance(file, SavedFile) and os.path.isfile(file.path):
-                self.notebook.add(self.make_frame(file), text=self.pad(filename))
+                self.notebook.add(self.make_frame(file), text=self.pad(file.name))
 
         self.notebook.pack(fill="both", expand=True)
 

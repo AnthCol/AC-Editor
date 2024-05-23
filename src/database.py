@@ -58,19 +58,25 @@ class Database():
         cursor = self.conn.execute("SELECT * FROM unsaved_files")
         unsaved_files = cursor.fetchall()
 
+        print("printing lengths saved, unsaved")
+        print(len(saved_files))
+        print(len(unsaved_files))
+
         file_list = [None] * (len(saved_files) + len(unsaved_files))
 
         print(saved_files)
         print(unsaved_files)
-
+        
         # Rank starts at 1, indices start at 0
         for file in saved_files:
-            path, rank = file
-            file_list[rank - 1] = SavedFile(path, rank)
+            path, rank, name = file
+            print(rank)
+            file_list[rank - 1] = SavedFile(path, rank, name)
 
         for file in unsaved_files:
-            content, rank = file
-            file_list[rank - 1] = UnsavedFile(content, rank)
+            content, rank, name = file
+            print(rank)
+            file_list[rank - 1] = UnsavedFile(content, rank, name)
 
         print("printing file_list: " + str(file_list))
 
