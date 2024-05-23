@@ -83,10 +83,10 @@ class Database():
         return file_list
     
     def insert_saved(self, file):
-        self.conn.execute("INSERT INTO saved_files (PATH, RANK, NAME) VALUES (?, ?, ?)", (file.path, file.rank, file.name))
+        self.conn.execute("INSERT INTO saved_files (PATH, NAME, RANK) VALUES (?, ?, ?)", (file.path, file.name, file.rank))
 
     def insert_unsaved(self, file):
-        self.conn.execute("INSERT INTO unsaved_files (CONTENT, RANK, NAME) VALUES (?, ?, ?)", (file.content, file.rank, file.name))
+        self.conn.execute("INSERT INTO unsaved_files (CONTENT, NAME, RANK) VALUES (?, ?, ?)", (file.content, file.name, file.rank))
 
     def save_files(self, file_info):
         self.clear_table("saved_files")
