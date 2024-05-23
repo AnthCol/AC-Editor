@@ -19,6 +19,8 @@ class GUIManager:
     def __init__(self, gui, settings, database):
         self.gui = gui
         self.notebook = ttk.Notebook(self.gui)
+        self.vim_entry = tk.Entry(self.gui)
+        #self.vim_text = tk.Text(self.gui, height=1)
         self.settings = settings
         self.database = database
         self.code_containers = []
@@ -254,5 +256,7 @@ class GUIManager:
             elif isinstance(file, SavedFile) and os.path.isfile(file.path):
                 self.notebook.add(self.make_frame(file), text=self.pad(file.name))
 
-        self.notebook.pack(fill="both", expand=True)
+        self.notebook.pack(fill="both", side=tk.TOP, expand=True)
+        self.vim_entry.pack()
+        #self.vim_text.pack(fill="both", side=tk.BOTTOM, expand=True)
 
