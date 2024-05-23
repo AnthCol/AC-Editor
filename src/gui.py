@@ -23,10 +23,12 @@ class GUIManager:
         self.database = database
         self.code_containers = []
 
+
     def make_icon(self, path):
         with Image.open(path) as image:
             icon = ImageTk.PhotoImage(image)
         return icon
+
 
     def update_settings(self, data):
         if data:
@@ -36,9 +38,11 @@ class GUIManager:
             self.settings.font_size = font_size
         return
 
+
     def pad(self, string):
         if string != None:
             return "    " + string + "    "
+
 
     def start(self):
         self.update_settings(self.database.load_settings()) 
@@ -58,6 +62,7 @@ class GUIManager:
     # For now the intended functionality is the following
     # Unsaved files will be "saved"
     # Saved files (on the drive) must be manually saved, else they will be loaded from memory
+    # Future situation where we need to check if a saved file is unsaved and save its content
     def update_files(self): 
         rank_counter = 1
         for container in self.code_containers:
@@ -67,20 +72,12 @@ class GUIManager:
             rank_counter += 1
 
 
-            # FIXME 
-            # Will have some situation where there is a SavedFile object, that
-            # needs to be saved 
-
-            # elif isinstance(container.file, SavedFile):
-            #     content = container.file.content = container.codeview.get("1.0", "end-1c")
-            #     with open(container.file.path, "w") as f:
-            #         f.write(content)
-
     def end(self): 
         # For file in notebook, update content 
         self.update_files()
         self.database.close([container.file for container in self.code_containers], self.settings)
         self.gui.destroy()
+
 
     def make_frame(self, file):
         frame = ttk.Frame(self.notebook)
@@ -118,8 +115,16 @@ class GUIManager:
     def show_latest_page(self):
         self.notebook.select(self.last_page_index())
 
+    # Find missing 
     def unsaved_rank(self):
-        return 1 + sum(1 for c in self.code_containers if isinstance(c.file, UnsavedFile))
+        return 1
+        # sequence = 0
+        # for c in self.code_containers:
+        #     if isinstance(c.file, UnsavedFile):
+        #         sequence += 1
+        #         if c.file.name.split(" ")[1] != sequence:
+        #             break
+        # return sequence + 1
 
     def determine_rank(self):
         return 1 + len(self.code_containers)
