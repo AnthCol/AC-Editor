@@ -63,7 +63,7 @@ class GUIManager:
     def end(self): 
         # For file in notebook, update content 
         self.update_files()
-        self.database.close([container.file for container in self.code_containers])
+        self.database.close([container.file for container in self.code_containers], self.settings)
         self.gui.destroy()
 
     def get_filename(self, file):
@@ -109,8 +109,14 @@ class GUIManager:
     def show_latest_page(self):
         self.notebook.select(self.last_page_index())
 
+    def unsaved_rank(self):
+        return 1 + sum(1 for c in self.code_containers if isinstance(c.file, UnsavedFile))
+
+    def determine_rank(self):
+        return 1 + len(self.code_containers)
+
     def new(self):
-        unsaved_rank = 1 + sum(1 for c in self.code_containers if isinstance(c.file, UnsavedFile))
+        unsaved_rank = unsaved_rank()
         file = UnsavedFile("", len(self.code_containers))
         self.notebook.add(self.make_frame(file), text=self.pad("New " + str(unsaved_rank)))
         self.show_latest_page()
@@ -118,12 +124,12 @@ class GUIManager:
     def open(self):
         filename = filedialog.askopenfilename()
         if filename != "":
-            file = SavedFile(filename, len(self.code_containers) + 1)
+            file = SavedFile(filename, self.determine_rank())
             self.notebook.add(self.make_frame(file), text=self.pad(self.get_filename(file)))
             self.show_latest_page()
 
     def close(self):
-        # If unsaved FIXME
+        # If unsaved future FIXME
         index = self.notebook.index(self.notebook.select())
         del self.code_containers[index]
         self.notebook.forget(index)
@@ -151,30 +157,12 @@ class GUIManager:
         if path != "":
             index = self.notebook.index(self.notebook.select())
             old_unsaved = self.code_containers[index]
-            new_saved = SavedFile(path, old_unsaved.file.rank)
+            new_saved = SavedFile(path=path, rank=old_unsaved.file.rank, name=os.path.basename(path)) 
             self.code_containers[index].file = new_saved
-            self.notebook.tab(index, text=self.pad(self.get_filename(new_saved)))        
+            self.notebook.tab(index, text=self.pad(new_saved.name))        
             with open(path, "w") as f:
                 f.write(self.codeview_contents(self.code_containers[index].codeview))
-            # create file with OS
-            # write data to it. 
 
-    # Why bother with this when we have save as???
-    # def rename(self):
-    #     index = self.notebook.index(self.notebook.select())
-    #     file = self.code_containers[index].file
-    #     if isinstance(file, SavedFile):
-    #         file.path = 
-    #         self.notebook.tab(index, text=self.pad(self.get_filename(file)))
-
-    #         # Plan: open small window
-    #         # Ask the user to type in the filename
-    #         # boom
-    #         #os.rename(file.path, )
-    #     else:
-    #         print("ERROR renaming UnsavedFile")
-
-    #     return
 
     # Might not bother implementing these we will see  
     def cut(self):
@@ -246,8 +234,6 @@ class GUIManager:
         # If there are no files to open (only happens in the case of fresh DB), make a blank one always. 
         if len(open_files) == 0:
             open_files.append(UnsavedFile("", 1))
-
-        print(open_files)
 
         for file in open_files:
             filename = self.get_filename(file)

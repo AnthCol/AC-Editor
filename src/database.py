@@ -77,10 +77,10 @@ class Database():
         return file_list
     
     def insert_saved(self, file):
-        self.conn.execute("INSERT INTO saved_files (PATH, RANK) VALUES (?, ?)", (file.path, file.rank))
+        self.conn.execute("INSERT INTO saved_files (PATH, RANK, NAME) VALUES (?, ?, ?)", (file.path, file.rank, file.name))
 
     def insert_unsaved(self, file):
-        self.conn.execute("INSERT INTO unsaved_files (CONTENT, RANK) VALUES (?, ?)", (file.content, file.rank))
+        self.conn.execute("INSERT INTO unsaved_files (CONTENT, RANK, NAME) VALUES (?, ?, ?)", (file.content, file.rank, file.name))
 
     def save_files(self, file_info):
         self.clear_table("saved_files")
@@ -96,10 +96,16 @@ class Database():
         
         self.conn.commit()
 
-    def close(self, file_info):
+    def save_settings(self, settings):
+        self.clear_table("settings")
+        self.conn.execute("INSERT INTO settings (COLOUR, FONT_TYPE, FONT_SIZE) VALUES (?, ?, ?)", (settings.colour, settings.font_type, settings.font_size))
+        self.conn.commit()
+
+    def close(self, file_info, settings):
         # print("IN DATABASE PRINTING FILE INFO:")
         # print(file_info)
         self.save_files(file_info)
+        self.save_settings(settings)
         self.conn.close()
 
     def load_settings(self):
