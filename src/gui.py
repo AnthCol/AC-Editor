@@ -49,6 +49,10 @@ class GUIManager:
 
     def set_shortcuts(self):
         self.gui.bind("<Control-s>", self.save)
+        self.gui.bind("<Control-Alt-s>", self.save_as)
+        self.gui.bind("<Control-q>", self.close)
+        self.gui.bind("<Control-o>", self.open)
+        self.gui.bind("<Control-n>", self.new)
     
 
     # For now the intended functionality is the following
