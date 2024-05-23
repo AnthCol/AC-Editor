@@ -69,12 +69,13 @@ class Database():
         
         # Rank starts at 1, indices start at 0
         for file in saved_files:
-            path, rank, name = file
+            path, name, rank = file
+            print("PRINTING RANK:")
             print(rank)
             file_list[rank - 1] = SavedFile(path, rank, name)
 
         for file in unsaved_files:
-            content, rank, name = file
+            content, name, rank = file
             print(rank)
             file_list[rank - 1] = UnsavedFile(content, rank, name)
 
