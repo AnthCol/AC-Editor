@@ -83,6 +83,7 @@ class GUIManager:
         if isinstance(file, SavedFile):
             with open(file.path) as f:
                 content = f.read()
+            print(content)
             codeview.insert(tk.END, content)     
         elif isinstance(file, UnsavedFile): 
             codeview.insert(tk.END, file.content)
@@ -240,13 +241,15 @@ class GUIManager:
         menubar.add_cascade(label="Settings", menu=settings_menu)
         menubar.add_cascade(label="Close", command=self.close)
 
-        self.open_files = self.database.load_files()
+        open_files = self.database.load_files()
  
-        # If there are no files to open, make a blank one always. 
-        if len(self.open_files) == 0:
-            self.open_files.append(UnsavedFile("", 1))
+        # If there are no files to open (only happens in the case of fresh DB), make a blank one always. 
+        if len(open_files) == 0:
+            open_files.append(UnsavedFile("", 1))
 
-        for file in self.open_files:
+        print(open_files)
+
+        for file in open_files:
             filename = self.get_filename(file)
             if isinstance(file, UnsavedFile):
                 self.notebook.add(self.make_frame(file), text=self.pad(filename))

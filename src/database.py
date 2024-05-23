@@ -35,12 +35,14 @@ class Database():
         saved_files =   """ CREATE TABLE saved_files
                             (
                                 PATH TEXT    NOT NULL, 
+                                NAME TEXT    NOT NULL, 
                                 RANK INTEGER NOT NULL
                             )
                         """
         unsaved_files = """ CREATE TABLE unsaved_files
                             (
                                 CONTENT TEXT    NOT NULL,
+                                NAME    TEXT    NOT NULL, 
                                 RANK    INTEGER NOT NULL
                             )
                         """
@@ -83,6 +85,8 @@ class Database():
     def save_files(self, file_info):
         self.clear_table("saved_files")
         self.clear_table("unsaved_files")
+
+        print(file_info)
 
         for file in file_info:
             if isinstance(file, SavedFile):
