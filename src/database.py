@@ -20,7 +20,7 @@ class Database():
         if (not self.table_exists(name)):
             self.conn.execute(table)
 
-    # Note injection, hardcoded function calls. 
+    # Not injection, hardcoded function calls. 
     def clear_table(self, name):
         self.conn.execute("DELETE FROM " + name)
 
@@ -58,28 +58,24 @@ class Database():
         cursor = self.conn.execute("SELECT * FROM unsaved_files")
         unsaved_files = cursor.fetchall()
 
-        print("printing lengths saved, unsaved")
-        print(len(saved_files))
-        print(len(unsaved_files))
+        # print("printing lengths saved, unsaved")
+        # print(len(saved_files))
+        # print(len(unsaved_files))
 
         file_list = [None] * (len(saved_files) + len(unsaved_files))
 
-        print(saved_files)
-        print(unsaved_files)
+        # print(saved_files)
+        # print(unsaved_files)
         
-        # Rank starts at 1, indices start at 0
         for file in saved_files:
             path, name, rank = file
-            print("PRINTING RANK:")
-            print(rank)
             file_list[rank - 1] = SavedFile(path, rank, name)
 
         for file in unsaved_files:
             content, name, rank = file
-            print(rank)
             file_list[rank - 1] = UnsavedFile(content, rank, name)
 
-        print("printing file_list: " + str(file_list))
+        #print("printing file_list: " + str(file_list))
 
         return file_list
     
@@ -93,7 +89,7 @@ class Database():
         self.clear_table("saved_files")
         self.clear_table("unsaved_files")
 
-        print(file_info)
+        #print(file_info)
 
         for file in file_info:
             if isinstance(file, SavedFile):
@@ -109,8 +105,6 @@ class Database():
         self.conn.commit()
 
     def close(self, file_info, settings):
-        # print("IN DATABASE PRINTING FILE INFO:")
-        # print(file_info)
         self.save_files(file_info)
         self.save_settings(settings)
         self.conn.close()

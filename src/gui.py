@@ -1,5 +1,6 @@
 import tkinter as tk
 import os
+import pygments.lexer
 import ttkthemes
 import pygments.lexers 
 from tkinter import ttk, filedialog
@@ -50,7 +51,9 @@ class GUIManager:
         self.set_shortcuts()
         self.gui.mainloop()
 
-
+    
+    # Make windows mac distinction here. Check system type and 
+    # Do ctrl vs command
     def set_shortcuts(self):
         self.gui.bind("<Control-s>", self.save)
         self.gui.bind("<Control-Alt-s>", self.save_as)
@@ -95,17 +98,26 @@ class GUIManager:
     def make_frame(self, file):
         frame = ttk.Frame(self.notebook)
 
+        lexer = pygments.lexers.TextLexer; 
+
+        if isinstance(file, SavedFile):
+            try: 
+                lexer = pygments.lexers.get_lexer_for_filename(os.path.basename(file.path))
+            except:
+                lexer = pygments.lexers.TextLexer
+
         codeview = CodeView(frame,
                             insertwidth=20,
                             color_scheme=self.settings.colour,
-                            font=(self.settings.font_type, self.settings.font_size))
- 
+                            font=(self.settings.font_type, self.settings.font_size), 
+                            lexer=lexer)
+
         # FIXME add more error checking later
         if isinstance(file, SavedFile):
             with open(file.path) as f:
                 content = f.read()
             codeview.insert(tk.END, content)     
-        elif isinstance(file, UnsavedFile): 
+        else:
             codeview.insert(tk.END, file.content)
 
         codeview.pack(fill="both", expand=True)
@@ -129,22 +141,27 @@ class GUIManager:
     def show_latest_page(self):
         self.notebook.select(self.last_page_index())
 
-    # Find missing 
     def unsaved_rank(self):
-        return 1
-        # sequence = 0
-        # for c in self.code_containers:
-        #     if isinstance(c.file, UnsavedFile):
-        #         sequence += 1
-        #         if c.file.name.split(" ")[1] != sequence:
-        #             break
-        # return sequence + 1
+        values = []
+        for c in self.code_containers:
+            if isinstance(c.file, UnsavedFile):
+                values.append(int(c.file.name.split()[1]))
+        values.sort()
 
+        count = 1
+
+        for v in values:
+            if v != count:
+                break
+            count += 1
+        
+        return str(count)
+    
     def determine_rank(self):
         return 1 + len(self.code_containers)
 
     def new(self, event=None):
-        file = UnsavedFile("", len(self.code_containers), "New " + str(self.unsaved_rank()))
+        file = UnsavedFile("", len(self.code_containers), "New " + self.unsaved_rank())
         self.notebook.add(self.make_frame(file), text=pad(file.name))
         self.show_latest_page()
 
@@ -155,11 +172,26 @@ class GUIManager:
             self.notebook.add(self.make_frame(file), text=pad(file.name))
             self.show_latest_page()
 
-    def close(self, event=None):
-        # If unsaved future FIXME
-        index = self.notebook.index(self.notebook.select())
+    def remove_file(self, index):
         del self.code_containers[index]
         self.notebook.forget(index)
+
+    # FIXME needs refactor. 
+    def close(self, event=None):
+        index = self.notebook.index(self.notebook.select())
+        file = self.code_containers[index].file
+
+        if isinstance(file, UnsavedFile):
+            if file.content != "":
+                result = tk.messagebox.askyesnocancel("Save File", "Do you want to save this file?")
+                if result == True:  
+                    self.save_as()
+                elif result == False:
+                    self.remove_file(index)
+            else:
+                self.remove_file(index)
+        else:
+            self.remove_file(index)
 
         if len(self.code_containers) == 0:
             self.new()
@@ -207,6 +239,10 @@ class GUIManager:
     
     def line_endings(self):
         return
+    
+    def font_size(self):
+        size = tk.simpledialog.askinteger("Font Size", "Input integer for font size:")
+        self.settings.font_size = size
 
     def initialize_gui(self):
         LOGO_LOCATION = "./images/logo.png"
@@ -238,6 +274,7 @@ class GUIManager:
 
         settings_map = {
             "Theme" : self.theme,
+            "Font Size" : self.font_size, 
             "Tab Size" : self.tab_size,
             "Line Endings" : self.line_endings
         }
@@ -255,15 +292,14 @@ class GUIManager:
  
         # If there are no files to open (only happens in the case of fresh DB), make a blank one always. 
         if len(open_files) == 0:
-            open_files.append(UnsavedFile("", 1, "New 1"))
+            open_files.append(UnsavedFile("", 1, "New " + self.unsaved_rank()))
 
         for file in open_files:
-            if isinstance(file, UnsavedFile):
+            if isinstance(file, SavedFile) and os.path.isfile(file.path):
                 self.notebook.add(self.make_frame(file), text=pad(file.name))
-            elif isinstance(file, SavedFile) and os.path.isfile(file.path):
+            else:
                 self.notebook.add(self.make_frame(file), text=pad(file.name))
 
         self.notebook.pack(fill="both", side=tk.TOP, expand=True)
         self.vim_entry.pack()
         #self.vim_text.pack(fill="both", side=tk.BOTTOM, expand=True)
-
