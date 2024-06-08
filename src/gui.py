@@ -1,36 +1,40 @@
 import tkinter as tk
 import os
+import ttkthemes
 import pygments.lexers 
 from tkinter import ttk, filedialog
 from chlorophyll import CodeView
-from PIL import Image, ImageTk
 from .file_datatypes import SavedFile, UnsavedFile
 from .code_container import CodeContainer
-
+from .auxiliary import make_icon, pad
 
 # FIXME
 # With the amount of references to self here, it may be best to just not do the OOP stuff since this is just 
 # turning into one massive class. 
 # Future problem though. 
 
-
 class GUIManager:
 
     def __init__(self, gui, settings, database):
         self.gui = gui
         self.notebook = ttk.Notebook(self.gui)
+        self.notebook.bind("<<NotebookTabChanged>>", self.tab_change)
+        self.style = ttk.Style(self.gui)
+        self.style.theme_use('clam')
+
         self.vim_entry = tk.Entry(self.gui)
         #self.vim_text = tk.Text(self.gui, height=1)
         self.settings = settings
         self.database = database
         self.code_containers = []
 
-
-    def make_icon(self, path):
-        with Image.open(path) as image:
-            icon = ImageTk.PhotoImage(image)
-        return icon
-
+        """
+            Set things up in the following way:
+            Cursor will stay on the codeview
+            as the user types, text will be added ELSEWHERE
+            and the display will be updated, rather than them having a 
+            thing to insert their text into        
+        """
 
     def update_settings(self, data):
         if data:
@@ -39,12 +43,6 @@ class GUIManager:
             self.settings.font_type = font_type
             self.settings.font_size = font_size
         return
-
-
-    def pad(self, string):
-        if string != None:
-            return "    " + string + "    "
-
 
     def start(self):
         self.update_settings(self.database.load_settings()) 
@@ -60,6 +58,19 @@ class GUIManager:
         self.gui.bind("<Control-o>", self.open)
         self.gui.bind("<Control-n>", self.new)
     
+
+    def tab_change(self, event=None):
+        index = self.notebook.index(self.notebook.select())
+        file = self.code_containers[index].file
+
+        if isinstance(file, SavedFile):
+            full_name = file.path 
+        else:
+            full_name = file.name
+
+        self.gui.title("ac_editor - " + full_name)
+        return
+
 
     # For now the intended functionality is the following
     # Unsaved files will be "saved"
@@ -85,6 +96,7 @@ class GUIManager:
         frame = ttk.Frame(self.notebook)
 
         codeview = CodeView(frame,
+                            insertwidth=20,
                             color_scheme=self.settings.colour,
                             font=(self.settings.font_type, self.settings.font_size))
  
@@ -131,19 +143,19 @@ class GUIManager:
     def determine_rank(self):
         return 1 + len(self.code_containers)
 
-    def new(self):
+    def new(self, event=None):
         file = UnsavedFile("", len(self.code_containers), "New " + str(self.unsaved_rank()))
-        self.notebook.add(self.make_frame(file), text=self.pad(file.name))
+        self.notebook.add(self.make_frame(file), text=pad(file.name))
         self.show_latest_page()
 
-    def open(self):
+    def open(self, event=None):
         path = filedialog.askopenfilename()
         if path != "":
             file = SavedFile(path, self.determine_rank(), os.path.basename(path))
-            self.notebook.add(self.make_frame(file), text=self.pad(file.name))
+            self.notebook.add(self.make_frame(file), text=pad(file.name))
             self.show_latest_page()
 
-    def close(self):
+    def close(self, event=None):
         # If unsaved future FIXME
         index = self.notebook.index(self.notebook.select())
         del self.code_containers[index]
@@ -159,13 +171,8 @@ class GUIManager:
         if isinstance(container.file, SavedFile):
             with open(container.file.path, "w") as f:
                 f.write(self.codeview_contents(container.codeview))
-        elif isinstance(container.file, UnsavedFile):
-            # Open filedialog to save the file 
-            # Name the file in the filedialog
-            # Save it somewhere 
-            print("temp")
-            # Open Save dialogue for unsaved file. 
-            # Should be the same code as new. 
+        else: # UnsavedFile
+            self.save_as()
 
     def save_as(self):
         path = filedialog.asksaveasfilename()
@@ -174,12 +181,12 @@ class GUIManager:
             old_unsaved = self.code_containers[index]
             new_saved = SavedFile(path, old_unsaved.file.rank, os.path.basename(path)) 
             self.code_containers[index].file = new_saved
-            self.notebook.tab(index, text=self.pad(new_saved.name))        
+            self.notebook.tab(index, text=pad(new_saved.name))        
             with open(path, "w") as f:
                 f.write(self.codeview_contents(self.code_containers[index].codeview))
 
 
-    # Might not bother implementing these we will see  
+    # To Be Implemented - Not urgent. 
     def cut(self):
         return
     
@@ -206,7 +213,7 @@ class GUIManager:
         TITLE = "ac_editor"
 
         self.gui.title(TITLE)
-        self.gui.wm_iconphoto(False, self.make_icon(LOGO_LOCATION))
+        self.gui.wm_iconphoto(False, make_icon(LOGO_LOCATION))
         self.gui.protocol("WM_DELETE_WINDOW", self.end)
  
         menubar = tk.Menu(self.gui)
@@ -252,9 +259,9 @@ class GUIManager:
 
         for file in open_files:
             if isinstance(file, UnsavedFile):
-                self.notebook.add(self.make_frame(file), text=self.pad(file.name))
+                self.notebook.add(self.make_frame(file), text=pad(file.name))
             elif isinstance(file, SavedFile) and os.path.isfile(file.path):
-                self.notebook.add(self.make_frame(file), text=self.pad(file.name))
+                self.notebook.add(self.make_frame(file), text=pad(file.name))
 
         self.notebook.pack(fill="both", side=tk.TOP, expand=True)
         self.vim_entry.pack()

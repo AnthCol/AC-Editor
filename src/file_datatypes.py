@@ -10,6 +10,7 @@ class SavedFile:
     path: str = None
     rank: int = None
     name: str = None
+    changed: bool = False
 
     def __init__(self, path: str, rank: int, name: str):
         self.path = path
@@ -21,6 +22,7 @@ class UnsavedFile:
     content: str = None
     rank:    int = None
     name:    str = None
+    changed: bool = False
 
     def __init__(self, content: str, rank: int, name: str):
         self.content = content
