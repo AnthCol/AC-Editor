@@ -9,3 +9,4 @@ def make_icon(path):
 def pad(string):
     if string != None:
         return "    " + string + "    "
+    

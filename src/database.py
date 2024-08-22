@@ -13,11 +13,11 @@ class Database():
         self.initialize_tables()
 
     def table_exists(self, name):
-        fetch_table = self.conn.execute("SELECT name FROM sqlite_master WHERE name = ?", (name,))
-        return fetch_table.fetchone() != None
+        cursor = self.conn.execute("SELECT name FROM sqlite_master WHERE name = ?", (name,))
+        return cursor.fetchone() != None
 
     def create_table(self, table, name):
-        if (not self.table_exists(name)):
+        if not self.table_exists(name):
             self.conn.execute(table)
 
     # Not injection, hardcoded function calls. 
@@ -58,15 +58,11 @@ class Database():
         cursor = self.conn.execute("SELECT * FROM unsaved_files")
         unsaved_files = cursor.fetchall()
 
-        # print("printing lengths saved, unsaved")
-        # print(len(saved_files))
-        # print(len(unsaved_files))
-
         file_list = [None] * (len(saved_files) + len(unsaved_files))
-
-        # print(saved_files)
-        # print(unsaved_files)
         
+        # FIXME ordering discrepancyb here (path, name, rnank vs path, rank, name)
+
+        # File ranks start at one. 
         for file in saved_files:
             path, name, rank = file
             file_list[rank - 1] = SavedFile(path, rank, name)
@@ -74,8 +70,6 @@ class Database():
         for file in unsaved_files:
             content, name, rank = file
             file_list[rank - 1] = UnsavedFile(content, rank, name)
-
-        #print("printing file_list: " + str(file_list))
 
         return file_list
     
@@ -89,12 +83,10 @@ class Database():
         self.clear_table("saved_files")
         self.clear_table("unsaved_files")
 
-        #print(file_info)
-
         for file in file_info:
             if isinstance(file, SavedFile):
                 self.insert_saved(file)
-            elif isinstance(file, UnsavedFile):
+            else:
                 self.insert_unsaved(file)
         
         self.conn.commit()
@@ -111,6 +103,5 @@ class Database():
 
     def load_settings(self):
         cursor = self.conn.execute("SELECT * FROM settings LIMIT 1")
-        info = cursor.fetchone() 
-        return info 
+        return cursor.fetchone()
     
