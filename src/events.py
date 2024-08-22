@@ -31,9 +31,12 @@ def file_open(file_inter, settings, event=None):
 def file_close(file_inter, settings, event=None):
     index = file_inter.notebook.index(file_inter.notebook.select())
     file = file_inter.containers[index].file
+    content = codeview_contents(file_inter.containers[index].codeview)
 
     save = False 
-    if isinstance(file, UnsavedFile) and file.content != "":
+
+
+    if isinstance(file, UnsavedFile) and content != "":
         save = tk.messagebox.askyesnocancel("Save File", "Do you want to save this file?")
 
     file_save_as(file_inter) if save else remove_file(file_inter, index)
