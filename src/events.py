@@ -56,6 +56,7 @@ def file_save(file_inter, event=None):
     else:
         file_save_as(file_inter)
 
+# FIXME creates a new file, but doesn't get rid of the old one. 
 def file_save_as(file_inter, window, TITLE, event=None):
     path = filedialog.asksaveasfilename()
     if path != "":
@@ -66,7 +67,6 @@ def file_save_as(file_inter, window, TITLE, event=None):
         file_inter.notebook.tab(index, text=pad(new.name))
         with open(path, "w") as f:
             f.write(codeview_contents(file_inter.containers[index].codeview))
-
         window.title(TITLE + " - " + path)
 
 
@@ -104,10 +104,12 @@ def line_endings(event=None):
 ################
 # Vim Events
 ################
-def i_press(vim, event=None):
+def i_press(vim, label, event=None):
     if vim.mode == vim.NORMAL:
         vim.mode = vim.INSERT
-    
+        vim.message = vim.insert_message
+        vim.display_message(label)
+ 
 def h_press(vim, event=None):
     if vim.mode == vim.NORMAL:
         return
@@ -123,7 +125,17 @@ def k_press(vim, event=None):
 def l_press(vim, event=None):
     if vim.mode == vim.NORMAL:
         return
-    
+
+def esc_press(vim, label, event=None):
+    vim.buffer = ""
+    if vim.mode == vim.INSERT:
+        vim.mode = vim.NORMAL
+        vim.message = vim.normal_message
+        vim.display_message(label)
+    else:
+        vim.message = vim.normal_message
+        vim.display_message(label)
+
 def shift_a_press(vim, event=None):
     if vim.mode == vim.NORMAL:
         return
@@ -141,11 +153,8 @@ def number_press(vim, event=None):
 ########
 # Other
 ########
-def tab_change(window, file_inter, event=None):
+def tab_change(window, file_inter, TITLE, event=None):
     index = file_inter.notebook.index(file_inter.notebook.select())
     file = file_inter.containers[index].file
     path = file.path if isinstance(file, SavedFile) else file.name
-    window.title("ac_editor - " + path)
-
-def close(event=None):
-    return
+    window.title(TITLE + " - " + path)

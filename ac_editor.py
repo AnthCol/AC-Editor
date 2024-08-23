@@ -24,6 +24,7 @@ THEME = "clam"
 LOGO_LOCATION = "./images/logo.png"
 
 
+# FIXME - Need to save the index for the most recently used file somewhere 
 def end(window, database, settings, file_interface, event=None):
     update_files(file_interface.containers)
     database.close([c.file for c in file_interface.containers], settings)
@@ -39,35 +40,7 @@ if __name__ == "__main__":
     database = Database()
     vim_controller = VimController()
     file_interface = FileInterface(window)
-
-    ##############################
-    # Initialize Non-Vim Bindings
-    ##############################
-    window.protocol("WM_DELETE_WINDOW", lambda: end(window, database, settings, file_interface))
-    window.bind("<Control-s>",          lambda: file_save(file_interface))
-    window.bind("<Control-Alt-s>",      lambda: file_save_as(file_interface))
-    window.bind("<Control-q>",          lambda: file_close(file_interface))
-    window.bind("<Control-o>",          lambda: file_open(file_interface, settings))
-    window.bind("<Control-n>",          lambda: file_new(file_interface))
-    file_interface.notebook.bind("<<NotebookTabChanged>>", lambda event : tab_change(window, file_interface, event))
-
-    ##########################
-    # Initialize Vim Bindings
-    ##########################
-    for i in range(10):
-        window.bind(str(i), lambda: number_press(vim_controller))
-
-    window.bind("<i>", lambda event: i_press(vim_controller))
-    window.bind("<h>", lambda event: h_press(vim_controller))
-    window.bind("<j>", lambda event: j_press(vim_controller))
-    window.bind("<k>", lambda event: k_press(vim_controller))
-    window.bind("<l>", lambda event: l_press(vim_controller))
-
-    window.bind("<Shift-A>",           lambda event: shift_a_press(vim_controller))
-    window.bind("<Shift-asciicircum>", lambda event: shift_hat_press(vim_controller))
-    window.bind("<Shift-dollar>",      lambda event: shift_dollar_press(vim_controller))
-
-    
+ 
     ################
     # Load settings
     ################
@@ -84,6 +57,38 @@ if __name__ == "__main__":
     window.title(TITLE)
     window.wm_iconphoto(False, make_icon(LOGO_LOCATION))
     _ = ttk.Style(window).theme_use(THEME)
+    # Anchor West doesn't do anything right now because the 
+    # size of the label is the size of the text. 
+    vim_label = ttk.Label(window, text=vim_controller.message, anchor="w")
+    # vim_label.place(relx=0.0, rely=1.0, anchor="w")
+
+    ##############################
+    # Initialize Non-Vim Bindings
+    ##############################
+    window.protocol("WM_DELETE_WINDOW", lambda: end(window, database, settings, file_interface))
+    window.bind("<Control-s>",          lambda: file_save(file_interface))
+    window.bind("<Control-Alt-s>",      lambda: file_save_as(file_interface))
+    window.bind("<Control-q>",          lambda: file_close(file_interface))
+    window.bind("<Control-o>",          lambda: file_open(file_interface, settings))
+    window.bind("<Control-n>",          lambda: file_new(file_interface))
+    file_interface.notebook.bind("<<NotebookTabChanged>>", lambda event : tab_change(window, file_interface, TITLE, event))
+
+    ##########################
+    # Initialize Vim Bindings
+    ##########################
+    for i in range(10):
+        window.bind(str(i), lambda: number_press(vim_controller))
+
+    window.bind("<i>", lambda event: i_press(vim_controller, vim_label))
+    window.bind("<h>", lambda event: h_press(vim_controller))
+    window.bind("<j>", lambda event: j_press(vim_controller))
+    window.bind("<k>", lambda event: k_press(vim_controller))
+    window.bind("<l>", lambda event: l_press(vim_controller))
+    window.bind("<Escape>", lambda event: esc_press(vim_controller, vim_label))
+
+    window.bind("<Shift-A>",           lambda event: shift_a_press(vim_controller))
+    window.bind("<Shift-asciicircum>", lambda event: shift_hat_press(vim_controller))
+    window.bind("<Shift-dollar>",      lambda event: shift_dollar_press(vim_controller))
 
 
     file_map = {
@@ -120,9 +125,9 @@ if __name__ == "__main__":
 
     window.config(menu=menubar)
 
-    #####################
-    # Load previous data
-    #####################
+    #################################
+    # Load previous data and display
+    #################################
     open_files = database.load_files()
     
     if len(open_files) == 0:
@@ -131,7 +136,12 @@ if __name__ == "__main__":
     for f in open_files: 
         file_interface.notebook.add(make_frame(f, settings, file_interface), text=pad(f.name))
 
+
+    ###########
+    # Pack GUI
+    ###########
     file_interface.notebook.pack(fill="both", side=tk.TOP, expand=True)
+    vim_label.pack()
 
     ################
     # Start the GUI
