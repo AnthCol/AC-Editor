@@ -56,7 +56,7 @@ def file_save(file_inter, event=None):
     else:
         file_save_as(file_inter)
 
-def file_save_as(file_inter, event=None):
+def file_save_as(file_inter, window, TITLE, event=None):
     path = filedialog.asksaveasfilename()
     if path != "":
         index = file_inter.notebook.index(file_inter.notebook.select())
@@ -66,6 +66,9 @@ def file_save_as(file_inter, event=None):
         file_inter.notebook.tab(index, text=pad(new.name))
         with open(path, "w") as f:
             f.write(codeview_contents(file_inter.containers[index].codeview))
+
+        window.title(TITLE + " - " + path)
+
 
 
 ############

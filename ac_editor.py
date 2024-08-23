@@ -90,7 +90,7 @@ if __name__ == "__main__":
         "New"     : lambda: file_new(file_interface, settings),
         "Open"    : lambda: file_open(file_interface, settings),
         "Save"    : lambda: file_save(file_interface),
-        "Save as" : lambda: file_save_as(file_interface), 
+        "Save as" : lambda: file_save_as(file_interface, window, TITLE), 
     }
 
     edit_map = {
