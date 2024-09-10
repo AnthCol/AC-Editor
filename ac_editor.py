@@ -21,7 +21,7 @@ from src.vim_controller    import VimController
 ############
 TITLE = "ac_editor"
 THEME = "clam"
-LOGO_LOCATION = ".src/images/logo.png"
+LOGO_LOCATION = "src/images/logo.png"
 
 
 # FIXME - Need to save the index for the most recently used file somewhere 
