@@ -62,54 +62,87 @@ if __name__ == "__main__":
     vim_label = ttk.Label(window, text=vim_controller.message, anchor="w")
     # vim_label.place(relx=0.0, rely=1.0, anchor="w")
 
+
+    ############################################
+    # Initialize lambda function map for events
+    ############################################
+    event_map = {
+        "new"          : lambda: file_new(file_interface, settings),
+        "open"         : lambda: file_open(file_interface, settings),
+        "save"         : lambda: file_save(file_interface),
+        "save_as"      : lambda: file_save_as(file_interface),
+        "close"        : lambda: file_close(file_interface),
+        "end"          : lambda: end(window, database, settings, file_interface),
+        "cut"          : lambda: cut(), 
+        "copy"         : lambda: copy(),
+        "paste"        : lambda: paste(), 
+        "select_all"   : lambda: select_all(),
+        "theme"        : lambda: theme(),
+        "font_size"    : lambda: font_size(), 
+        "tab_size"     : lambda: tab_size(), 
+        "line_endings" : lambda: line_endings(),
+        "tab_change"   : lambda event: tab_change(window, file_interface, TITLE), 
+        "i"            : lambda event: i_press(vim_controller, vim_label), 
+        "h"            : lambda event: h_press(vim_controller),
+        "j"            : lambda event: j_press(vim_controller),
+        "k"            : lambda event: k_press(vim_controller),
+        "l"            : lambda event: l_press(vim_controller),
+        "num"          : lambda event: number_press(vim_controller), 
+        "esc"          : lambda event: esc_press(vim_controller, vim_label),
+        "shift_a"      : lambda event: shift_a_press(vim_controller),
+        "shift_hat"    : lambda event: shift_hat_press(vim_controller), 
+        "shift_dollar" : lambda event: shift_dollar_press(vim_controller), 
+    } 
+
+
     ##############################
     # Initialize Non-Vim Bindings
     ##############################
-    window.protocol("WM_DELETE_WINDOW", lambda: end(window, database, settings, file_interface))
-    window.bind("<Control-s>",          lambda: file_save(file_interface))
-    window.bind("<Control-Alt-s>",      lambda: file_save_as(file_interface))
-    window.bind("<Control-q>",          lambda: file_close(file_interface))
-    window.bind("<Control-o>",          lambda: file_open(file_interface, settings))
-    window.bind("<Control-n>",          lambda: file_new(file_interface))
-    file_interface.notebook.bind("<<NotebookTabChanged>>", lambda event : tab_change(window, file_interface, TITLE, event))
+    window.protocol("WM_DELETE_WINDOW", event_map["end"])
+    window.bind("<Control-s>", event_map["save"])
+    window.bind("<Control-Alt-s>", event_map["save_as"])
+    window.bind("<Control-q>", event_map["close"])
+    window.bind("<Control-o>", event_map["open"])
+    window.bind("<Control-n>", event_map["new"])
+    file_interface.notebook.bind("<<NotebookTabChanged>>", event_map["tab_change"])
 
     ##########################
     # Initialize Vim Bindings
     ##########################
     for i in range(10):
-        window.bind(str(i), lambda: number_press(vim_controller))
+        window.bind(str(i), event_map["num"]) 
 
-    window.bind("<i>", lambda event: i_press(vim_controller, vim_label))
-    window.bind("<h>", lambda event: h_press(vim_controller))
-    window.bind("<j>", lambda event: j_press(vim_controller))
-    window.bind("<k>", lambda event: k_press(vim_controller))
-    window.bind("<l>", lambda event: l_press(vim_controller))
-    window.bind("<Escape>", lambda event: esc_press(vim_controller, vim_label))
+    window.bind("<i>", event_map["i"]) 
+    window.bind("<h>", event_map["h"]) 
+    window.bind("<j>", event_map["j"]) 
+    window.bind("<k>", event_map["k"]) 
+    window.bind("<l>", event_map["l"]) 
+    window.bind("<Escape>", event_map["esc"]) 
 
-    window.bind("<Shift-A>",           lambda event: shift_a_press(vim_controller))
-    window.bind("<Shift-asciicircum>", lambda event: shift_hat_press(vim_controller))
-    window.bind("<Shift-dollar>",      lambda event: shift_dollar_press(vim_controller))
+    window.bind("<Shift-A>", event_map["shift_a"]) 
+    window.bind("<Shift-asciicircum>", event_map["shift_hat"]) 
+    window.bind("<Shift-dollar>", event_map["shift_dollar"])
 
 
     file_map = {
-        "New"     : lambda: file_new(file_interface, settings),
-        "Open"    : lambda: file_open(file_interface, settings),
-        "Save"    : lambda: file_save(file_interface),
-        "Save as" : lambda: file_save_as(file_interface, window, TITLE), 
+        "New"     : event_map["new"], 
+        "Open"    : event_map["open"],
+        "Save"    : event_map["save"], 
+        "Save as" : event_map["save_as"]
     }
 
     edit_map = {
-        "Cut"        : lambda: cut(), 
-        "Copy"       : lambda: copy(), 
-        "Paste"      : lambda: paste(), 
-        "Select All" : lambda: select_all(),
+        "Cut"        : event_map["cut"], 
+        "Copy"       : event_map["copy"], 
+        "Paste"      : event_map["paste"],
+        "Select All" : event_map["select_all"]
     }
 
     settings_map = {
-        "Theme"        : lambda: theme(),
-        "Font Size"    : lambda: font_size(), 
-        "Tab Size"     : lambda: tab_size(),
-        "Line Endings" : lambda: line_endings(),
+        "Theme"        : event_map["theme"], 
+        "Font Size"    : event_map["font_size"], 
+        "Tab Size"     : event_map["tab_size"], 
+        "Line Endings" : event_map["line_endings"]
     }
 
     menubar = tk.Menu(window)
@@ -121,7 +154,7 @@ if __name__ == "__main__":
     menubar.add_cascade(label="File", menu=file_menu)
     menubar.add_cascade(label="Edit", menu=edit_menu)
     menubar.add_cascade(label="Settings", menu=settings_menu)
-    menubar.add_cascade(label="Close", command=lambda: file_close(file_interface, settings))
+    menubar.add_cascade(label="Close", command=event_map["close"])
 
     window.config(menu=menubar)
 
@@ -135,6 +168,9 @@ if __name__ == "__main__":
     
     for f in open_files: 
         file_interface.notebook.add(make_frame(f, settings, file_interface), text=pad(f.name))
+
+    for c in file_interface.containers:
+        c.codeview.configure(state="disabled")
 
 
     ###########
