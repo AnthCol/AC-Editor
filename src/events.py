@@ -69,86 +69,24 @@ def file_save_as(file_inter, window, TITLE, event=None):
             f.write(codeview_contents(file_inter.containers[index].codeview))
         window.title(TITLE + " - " + path)
 
-
-
-############
-# Edit Menu
-############
-def cut(event=None):
-    return
-
-def copy(event=None):
-    return
-
-def paste(event=None):
-    return
-
-def select_all(event=None):
-    return
-
-################
-# Settings Menu
-################
-def theme(event=None):
-    return
-
-def font_size(event=None):
-    return
-
-def tab_size(event=None):
-    return
-
-def line_endings(event=None):
-    return
-
 ################
 # Vim Events
 ################
-def i_press(vim, label, event=None):
-    if vim.mode == vim.NORMAL:
-        vim.mode = vim.INSERT
-        vim.message = vim.insert_message
-        vim.display_message(label)
- 
-def h_press(vim, event=None):
-    if vim.mode == vim.NORMAL:
-        return
-        
-def j_press(vim, event=None):
-    if vim.mode == vim.NORMAL:
-        return
 
-def k_press(vim, event=None):
-    if vim.mode == vim.NORMAL:
-        return
 
-def l_press(vim, event=None):
-    if vim.mode == vim.NORMAL:
-        return
+def interpret_command(vim_controller, label, event=None):
+    vim_controller.buffer += str(event.char)
+    vim_controller.interpret_buffer()
 
-def esc_press(vim, label, event=None):
-    vim.buffer = ""
-    if vim.mode == vim.INSERT:
-        vim.mode = vim.NORMAL
-        vim.message = vim.normal_message
-        vim.display_message(label)
+def esc_press(vim_controller, label, event=None):
+    vim_controller.clear_buffer()
+    if vim_controller.mode == vim_controller.INSERT:
+        vim_controller.mode = vim_controller.NORMAL
+        vim_controller.message = vim_controller.normal_message
+        vim_controller.display_message(label)
     else:
-        vim.message = vim.normal_message
-        vim.display_message(label)
-
-def shift_a_press(vim, event=None):
-    if vim.mode == vim.NORMAL:
-        return
-
-def shift_hat_press(vim, event=None):
-    return
-
-def shift_dollar_press(vim, event=None):
-    return
-
-def number_press(vim, event=None):
-    if vim.mode == vim.NORMAL:
-        vim.buffer += event.char
+        vim_controller.message = vim_controller.normal_message
+        vim_controller.display_message(label)
 
 ########
 # Other

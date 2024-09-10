@@ -10,3 +10,9 @@ class VimController:
     def display_message(self, label):
         label.config(text=self.message)
         label.pack()
+
+    def clear_buffer(self):
+        self.buffer = ""
+
+    def interpret_buffer(self):
+        return
