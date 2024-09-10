@@ -1,6 +1,6 @@
 # ac_editor
-Welcome to ac_editor! 
-This is a small, lightweight editor that I made for myself, intended to be used primarily for note-taking. 
+Welcome to ac_editor!<br> 
+This is a small, lightweight, shortcuts-based editor that I made for myself, intended to be used primarily for note-taking. 
 
 
 ## Tech 
@@ -23,20 +23,35 @@ While the thought did cross my mind, I eventually came to the conclusion that it
 The subset of Vim commands supported by this editor are listed below:
 
 ```
-- i         (enter INSERT mode)
-- esc       (enter NORMAL mode)
-- <NUM> h   (move cursor left NUM spaces)
-- <NUM> j   (move cursor down NUM lines)
-- <NUM> k   (move cursor up NUM lines)
-- <NUM> l   (move cursor right NUM spaces)
-- shift + a (move cursor to end of line and enter INSERT mode)
-- shift + ^ (move cursor to start of line)
-- shift + $ (move cursor to end of line)
+- :w            (write file)
+- :q            (close file)
+- :q!           (close file without saving) 
+- :wq           (write file, then close file)
+- i             (enter INSERT mode)
+- esc           (enter NORMAL mode)
+- <NUM> h       (move cursor left NUM spaces)
+- <NUM> j       (move cursor down NUM lines)
+- <NUM> k       (move cursor up NUM lines)
+- <NUM> l       (move cursor right NUM spaces)
+- A (shift + a) (move cursor to end of line and enter INSERT mode)
+- ^ (shift + 6) (move cursor to start of line)
+- $ (shift + 4) (move cursor to end of line)
+```
+
+## List of Shortcuts
+Here are the non-Vim shortcuts supported by the editor:
+
+```
+- Ctrl + s       (save current file)
+- Ctrl + Alt + s (save current file as)
+- Ctrl + q       (close current file)
+- Ctrl + o       (open file)
+- Ctrl + n       (create new file)
 ```
 
 ## Limitations
 
-- I have only tested this project on Windows. Key shortcuts may not work on other operating systems. 
+- I have only tested this project on Windows.
 - `VISUAL` mode is not currently supported. 
 - Rebinding keys is not currently supported. 
 
