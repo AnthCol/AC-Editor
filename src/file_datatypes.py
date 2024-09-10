@@ -1,30 +1,16 @@
-from dataclasses import dataclass
-
 # Path represents the file path that the program will load from
-# Content represents the 
+# Content represents the contents of the file
 # Rank represents the order in which they are to be presented as tabs within the editor
 # Name represents the file name that is to be displayed on the tab in the editor
 
-@dataclass
 class SavedFile:
-    path: str = None
-    rank: int = None
-    name: str = None
-    changed: bool = False
-
-    def __init__(self, path: str, rank: int, name: str):
+    def __init__(self, path, rank, name):
         self.path = path
         self.rank = rank
         self.name = name
 
-@dataclass
 class UnsavedFile:
-    content: str = None
-    rank:    int = None
-    name:    str = None
-    changed: bool = False
-
-    def __init__(self, content: str, rank: int, name: str):
+    def __init__(self, content, rank, name):
         self.content = content
         self.rank = rank
         self.name = name
