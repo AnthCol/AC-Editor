@@ -7,14 +7,6 @@ from .file_helpers   import determine_lexer
 from .code_container import CodeContainer
 from .file_datatypes import SavedFile
 
-
-def create_submenu(menubar, map):
-    submenu = tk.Menu(menubar, tearoff="off")
-    for name, func in map.items():
-        submenu.add_command(label=name, command=func)
-    return submenu
-
-
 def make_frame(file, settings, file_inter):
     frame = ttk.Frame(file_inter.notebook)
 

@@ -10,7 +10,7 @@ from src.events            import *
 from src.settings          import Settings
 from src.database          import Database
 from src.auxiliary         import make_icon, pad
-from src.gui_helpers       import create_submenu, make_frame
+from src.gui_helpers       import make_frame
 from src.file_helpers      import update_files, unsaved_rank
 from src.file_datatypes    import UnsavedFile
 from src.file_interface    import FileInterface
