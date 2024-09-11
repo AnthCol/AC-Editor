@@ -39,7 +39,11 @@ def file_close(file_inter, settings, event=None):
     if isinstance(file, UnsavedFile) and content != "":
         save = tk.messagebox.askyesnocancel("Save File", "Do you want to save this file?")
 
-    file_save_as(file_inter) if save else remove_file(file_inter, index)
+    if save == True:
+        file_save_as(file_inter)
+    elif save == False:
+        remove_file(file_inter, index)
+    # If save == None, cancel was clicked and we do nothing. 
 
     if len(file_inter.containers) == 0:
         file_new(file_inter, settings)
