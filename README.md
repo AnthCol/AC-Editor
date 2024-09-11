@@ -5,9 +5,9 @@ This is a small, lightweight, shortcuts-based editor that I made for myself, int
 
 ## Tech 
 
-<img src="./docs/images/python_logo.png" height=100/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="./docs/images/sqlite_logo.png" height=100/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="./docs/images/tkinter_logo.gif" height=100>
+[<img src="./docs/images/python_logo.png" height=100/>](https://www.python.org/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[<img src="./docs/images/sqlite_logo.png" height=100/>](https://sqlite.org/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[<img src="./docs/images/tkinter_logo.gif" height=100/>](https://www.tcl.tk/)
 
 ## Motivation
 I like using Notepad++, and I also like using Vim. While programming, I like to keep open a lightweight text editor alongside my IDE 
@@ -42,18 +42,20 @@ The subset of Vim commands supported by this editor are listed below:
 Here are the non-Vim shortcuts supported by the editor:
 
 ```
-- Ctrl + s       (save current file)
-- Ctrl + Alt + s (save current file as)
-- Ctrl + q       (close current file)
-- Ctrl + o       (open file)
-- Ctrl + n       (create new file)
+- ctrl + s       (save current file)
+- ctrl + alt + s (save current file as)
+- ctrl + q       (close current file)
+- ctrl + o       (open file)
+- ctrl + n       (create new file)
+- ctrl + tab     (switch notebook tabs, supported through Windows)
 ```
 
 ## Limitations
 
 - I have only tested this project on Windows.
-- `VISUAL` mode is not currently supported. 
+- `VISUAL` mode is not currently supported, though you can click and drag with your mouse. 
 - Rebinding keys is not currently supported. 
+- Changing settings such as font size and theme is not currently supported. 
 
 
 
