@@ -106,8 +106,8 @@ if __name__ == "__main__":
     vim_commands.append("<Shift-asciicircum>")
     vim_commands.append("<Shift-dollar>")
 
-    for string in vim_commands:
-        window.bind(string, event_map["vim"])
+    for command in vim_commands:
+        window.bind(command, event_map["vim"])
 
     # It is easier to treat escape specially. 
     window.bind("<Escape>", event_map["esc"]) 
@@ -124,14 +124,14 @@ if __name__ == "__main__":
     for f in open_files: 
         file_interface.notebook.add(make_frame(f, settings, file_interface), text=pad(f.name))
 
-    for c in file_interface.containers:
-        c.codeview.configure(state="disabled")
+    # for c in file_interface.containers:
+    #     c.codeview.configure(state="disabled")
 
 
     ###########
     # Pack GUI
     ###########
-    file_interface.notebook.pack(fill="both", side=tk.TOP, expand=True)
+    file_interface.notebook.pack(fill="both", expand=True)
     vim_label.pack()
 
     ################
