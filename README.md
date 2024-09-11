@@ -9,6 +9,30 @@ This is a small, lightweight, shortcuts-based editor that I made for myself, int
 [<img src="./docs/images/sqlite_logo.png" height=100/>](https://sqlite.org/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [<img src="./docs/images/tkinter_logo.gif" height=100/>](https://www.tcl.tk/)
 
+## Demo Video
+
+To be completed.
+
+## Screenshots
+
+To be completed.
+
+## Usage
+
+To use this project, clone the repository, then run the following commands:
+
+```bash
+# To install the necessary dependencies for this project
+pip install -r requirements.txt 
+# or
+python3 -m pip install -r requirements.txt
+```
+
+```bash
+# To start up the GUI
+python3 ac_editor.py
+```
+
 ## Motivation
 I like using Notepad++, and I also like using Vim. While programming, I like to keep open a lightweight text editor alongside my IDE 
 to take notes in. Most of the time this is Notepad++, but I find myself missing having Vim motions available. 
