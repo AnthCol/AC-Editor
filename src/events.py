@@ -17,16 +17,23 @@ from .file_datatypes import SavedFile, UnsavedFile
 ############
 def file_new(file_inter, settings, event=None):
     containers = file_inter.containers
-    file = UnsavedFile("", len(containers), "New " + unsaved_rank(containers))
-    file_inter.notebook.add(make_frame(file, settings, file_inter), text=pad(file.name))
-    show_latest_page(file_inter.notebook)
+    rank = determine_rank(file_inter.containers)
+    # Rank in file vs rank in notebook are different. 
+    file = UnsavedFile("", rank, "New " + unsaved_rank(containers))
+    frame = make_frame(file, settings, file_inter)
+    if frame != None:
+        file_inter.notebook.add(make_frame(file, settings, file_inter), text=pad(file.name))
+        show_latest_page(file_inter.notebook)
 
 def file_open(file_inter, settings, event=None):
     path = filedialog.askopenfilename()
     if path != "":
-        file = SavedFile(path, determine_rank(file_inter.containers), os.path.basename(path))
-        file_inter.notebook.add(make_frame(file, settings, file_inter), text=pad(file.name))
-        show_latest_page(file_inter.notebook)
+        rank = determine_rank(file_inter.containers)
+        file = SavedFile(path, rank, os.path.basename(path))
+        frame = make_frame(file, settings, file_inter)
+        if frame != None:
+            file_inter.notebook.add(make_frame(file, settings, file_inter), text=pad(file.name))
+            show_latest_page(file_inter.notebook)
 
 def file_close(file_inter, settings, event=None):
     index = file_inter.notebook.index(file_inter.notebook.select())
@@ -43,7 +50,7 @@ def file_close(file_inter, settings, event=None):
         file_save_as(file_inter)
     elif save == False:
         remove_file(file_inter, index)
-    # If save == None, cancel was clicked and we do nothing. 
+    # elif save == None, cancel was clicked and we do nothing. 
 
     if len(file_inter.containers) == 0:
         file_new(file_inter, settings)

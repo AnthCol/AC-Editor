@@ -122,7 +122,9 @@ if __name__ == "__main__":
         open_files.append(UnsavedFile("", 1, "New " + unsaved_rank(file_interface.containers)))
     
     for f in open_files: 
-        file_interface.notebook.add(make_frame(f, settings, file_interface), text=pad(f.name))
+        frame = make_frame(f, settings, file_interface)
+        if frame != None:
+            file_interface.notebook.add(make_frame(f, settings, file_interface), text=pad(f.name))
 
     # for c in file_interface.containers:
     #     c.codeview.configure(state="disabled")
@@ -132,7 +134,7 @@ if __name__ == "__main__":
     # Pack GUI
     ###########
     file_interface.notebook.pack(fill="both", expand=True)
-    vim_label.pack()
+    vim_label.pack(fill="both")
 
     ################
     # Start the GUI

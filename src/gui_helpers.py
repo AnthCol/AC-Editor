@@ -18,9 +18,13 @@ def make_frame(file, settings, file_inter):
 
     # Add more error checking later (make sure file actually exists)
     if isinstance(file, SavedFile):
-        with open(file.path) as f:
-            content = f.read()
-        codeview.insert(tk.END, content)
+        try:
+            with open(file.path) as f:
+                content = f.read()
+            codeview.insert(tk.END, content)
+        except Exception as e:
+            tk.messagebox.showerror("Error", "Invalid file type.")
+            return None
     else:
         codeview.insert(tk.END, file.content)
 
