@@ -59,6 +59,10 @@ if __name__ == "__main__":
     _ = ttk.Style(window).theme_use(THEME)
     vim_label = ttk.Label(window, text=vim_controller.message, anchor="w")
 
+    file_interface.notebook.grid(row=0, column=0, sticky="nsew")
+    vim_label.grid(row=1, column=0, sticky="ew")
+    window.grid_rowconfigure(0, weight=1)
+    window.grid_columnconfigure(0, weight=1)
 
     ############################################
     # Initialize lambda function map for events
@@ -129,12 +133,6 @@ if __name__ == "__main__":
     # for c in file_interface.containers:
     #     c.codeview.configure(state="disabled")
 
-
-    ###########
-    # Pack GUI
-    ###########
-    file_interface.notebook.pack(fill="both", expand=True)
-    vim_label.pack(fill="both")
 
     ################
     # Start the GUI
