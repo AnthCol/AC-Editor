@@ -83,21 +83,17 @@ def file_save_as(file_inter, window, TITLE, event=None):
 ################
 # Vim Events
 ################
-
-
-def interpret_command(vim_controller, label, event=None):
+def interpret_command(vim_controller, file_interface, event=None):
     vim_controller.buffer += str(event.char)
+    vim_controller.display_message()
     vim_controller.interpret_buffer()
 
-def esc_press(vim_controller, label, event=None):
-    vim_controller.clear_buffer()
-    if vim_controller.mode == vim_controller.INSERT:
-        vim_controller.mode = vim_controller.NORMAL
-        vim_controller.message = vim_controller.normal_message
-        vim_controller.display_message(label)
-    else:
-        vim_controller.message = vim_controller.normal_message
-        vim_controller.display_message(label)
+def esc_press(vim_controller, event=None):
+    vim_controller.switch_normal()
+
+def enter_press(vim_controller, event=None):
+    vim_controller.interpret_buffer()
+
 
 ########
 # Other
