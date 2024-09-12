@@ -42,7 +42,6 @@ if __name__ == "__main__":
     _ = ttk.Style(window).theme_use(THEME)
     vim_label = ttk.Label(window, anchor="w")
 
-
     #################
     # Necessary Data
     #################
@@ -50,7 +49,6 @@ if __name__ == "__main__":
     database = Database()
     vim_controller = VimController(vim_label)
     file_interface = FileInterface(window)
-
 
     ###############################
     # Make final aesthetic changes
@@ -71,7 +69,6 @@ if __name__ == "__main__":
         settings.font_type = font_type
         settings.font_size = font_size
 
-
     ############################################
     # Initialize lambda function map for events
     ############################################
@@ -89,9 +86,9 @@ if __name__ == "__main__":
         # Vim Commands
         "vim"          : lambda event: handle_command(vim_controller, file_interface, event),
         "esc"          : lambda event: esc_press(vim_controller),
-        "enter"        : lambda event: enter_press(vim_controller, file_interface),
+        "return"       : lambda event: return_press(vim_controller, file_interface),
+        "back"         : lambda event: backspace_press(vim_controller)
     } 
-
 
     ##############################
     # Initialize Non-Vim Bindings
@@ -103,7 +100,6 @@ if __name__ == "__main__":
     window.bind("<Control-o>", event_map["open"])
     window.bind("<Control-n>", event_map["new"])
     file_interface.notebook.bind("<<NotebookTabChanged>>", event_map["tab_change"])
-
 
     ##########################
     # Initialize Vim Bindings
@@ -127,9 +123,10 @@ if __name__ == "__main__":
     for command in vim_commands:
         window.bind(command, event_map["vim"])
 
-    # It is easier to treat these two specially.
+    # It is easier to treat these on their own.
     window.bind("<Escape>", event_map["esc"]) 
-    window.bind("<Enter>", event_map["enter"])
+    window.bind("<Return>", event_map["return"])
+    window.bind("<BackSpace>", event_map["back"])
 
     #################################
     # Load previous data and display

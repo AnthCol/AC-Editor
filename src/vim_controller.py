@@ -21,6 +21,10 @@ class VimController:
         text = self.mode_message + self.command_buffer
         self.label.config(text=text)
 
+    def delete_char(self):
+        self.command_buffer = self.command_buffer[:-1]
+        self.update_display()
+
     def reset_buffer(self):
         self.mode_message = NORMAL_MESSAGE if (self.mode == NORMAL) else INSERT_MESSAGE
         self.command_buffer = EMPTY_BUFFER

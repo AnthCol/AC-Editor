@@ -110,8 +110,11 @@ def handle_command(vim_controller, file_interface, event=None):
 def esc_press(vim_controller, event=None):
     vim_controller.switch_normal()
 
-def enter_press(vim_controller, file_interface, event=None):
+def return_press(vim_controller, file_interface, event=None):
     interpret_buffer(vim_controller, file_interface)
+
+def backspace_press(vim_controller, event=None):
+    vim_controller.delete_char()
 
 def is_valid_command(command):
     for regex in VALID_COMMANDS:
