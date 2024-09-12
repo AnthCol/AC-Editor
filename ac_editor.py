@@ -73,6 +73,24 @@ if __name__ == "__main__":
     # Initialize lambda function map for events
     ############################################
 
+    vim_map = {
+        "[0-9]*h" : lambda: h(window, vim_controller),
+        "[0-9]*j" : lambda: j(window, vim_controller),
+        "[0-9]*k" : lambda: k(window, vim_controller),
+        "[0-9]*l" : lambda: l(window, vim_controller),
+        "i"       : lambda: i(window, vim_controller),
+        "A"       : lambda: A(window, vim_controller),
+        "\^"      : lambda: hat(window, vim_controller),
+        "\$"      : lambda: dollar(window, vim_controller),
+        ":w"      : lambda: w(window, vim_controller),
+        ":q"      : lambda: q(window, vim_controller),
+        ":wq"     : lambda: wq(window, vim_controller),
+        ":q!"     : lambda: q_no_save(window, vim_controller), 
+        "gg"      : lambda: gg(window, vim_controller),
+        "G"       : lambda: G(window, vim_controller)
+    }
+
+
     # FIXME, figure out which ones actually need the events 
     event_map = {
         # Editor Shorcuts
@@ -84,7 +102,7 @@ if __name__ == "__main__":
         "end"          : lambda: end(window, database, settings, file_interface),
         "tab_change"   : lambda event: tab_change(window, file_interface, TITLE), 
         # Vim Commands
-        "vim"          : lambda event: handle_command(vim_controller, file_interface, event),
+        "vim"          : lambda event: handle_command(vim_controller, file_interface, vim_map, event),
         "esc"          : lambda event: esc_press(vim_controller),
         "return"       : lambda event: return_press(vim_controller, file_interface),
         "back"         : lambda event: backspace_press(vim_controller)

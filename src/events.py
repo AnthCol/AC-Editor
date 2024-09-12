@@ -84,28 +84,10 @@ def file_save_as(file_inter, window, TITLE, event=None):
 # Vim Events
 ################
 
-VALID_COMMANDS = {
-    "[0-9]*h" : lambda: 10,
-    "[0-9]*j" : lambda: 10,
-    "[0-9]*k" : lambda: 10,
-    "[0-9]*l" : lambda: 10,
-    "i"       : lambda: 10,
-    "A"       : lambda: 10,
-    "\^"      : lambda: 10,
-    "\$"      : lambda: 10, 
-    ":w"      : lambda: 10,
-    ":q"      : lambda: 10, 
-    ":wq"     : lambda: 10, 
-    ":q!"     : lambda: 10, 
-    "gg"      : lambda: 10,
-    "G"       : lambda: 10
-}
-
-
-def handle_command(vim_controller, file_interface, event=None):
+def handle_command(vim_controller, file_interface, command_map, event=None):
     vim_controller.append_buffer(str(event.char))
     vim_controller.update_display()
-    interpret_buffer(vim_controller, file_interface)
+    interpret_buffer(vim_controller, file_interface, command_map)
 
 def esc_press(vim_controller, event=None):
     vim_controller.switch_normal()
@@ -116,23 +98,65 @@ def return_press(vim_controller, file_interface, event=None):
 def backspace_press(vim_controller, event=None):
     vim_controller.delete_char()
 
-def is_valid_command(command):
-    for regex in VALID_COMMANDS:
+def is_valid_command(command, valid):
+    for regex in valid:
         print("printing regex: " + regex + " and command: " + command)
         if re.match(regex, command):
             return (True, regex)
     return (False, None)
 
-def interpret_buffer(vim_controller, file_interface):
+def interpret_buffer(vim_controller, file_interface, commands):
     buffer = vim_controller.get_buffer()
-    values = is_valid_command(buffer)
+    values = is_valid_command(buffer, commands)
     valid = values[0]
     regex = values[1]
 
     if valid:
         vim_controller.reset_buffer()
-        print("printing command and regex: " + buffer + " " + regex)
+        # Below is a function call. See "vim_map" in ac_editor.py
+        commands[regex]
 
+def h(window, vim_controller):
+    return
+
+def j(window, vim_controller):
+    return
+
+def k(window, vim_controller):
+    return
+
+def l(window, vim_controller):
+    return
+
+def i(window, vim_controller): 
+    return
+
+def A(window, vim_controller):
+    return
+
+def hat(window, vim_controller):
+    return
+
+def dollar(window, vim_controller):
+    return
+
+def w(window, vim_controller):
+    return
+
+def q(window, vim_controller):
+    return
+
+def wq(window, vim_controller):
+    return
+
+def q_no_save(window, vim_controller):
+    return
+
+def gg(window, vim_controller):
+    return
+
+def G(window, vim_controller):
+    return
 
 ########
 # Other
