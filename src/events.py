@@ -1,3 +1,4 @@
+import re 
 import os
 
 import tkinter as tk
@@ -42,7 +43,6 @@ def file_close(file_inter, settings, event=None):
 
     save = False 
 
-
     if isinstance(file, UnsavedFile) and content != "":
         save = tk.messagebox.askyesnocancel("Save File", "Do you want to save this file?")
 
@@ -83,16 +83,52 @@ def file_save_as(file_inter, window, TITLE, event=None):
 ################
 # Vim Events
 ################
-def interpret_command(vim_controller, file_interface, event=None):
-    vim_controller.buffer += str(event.char)
-    vim_controller.display_message()
-    vim_controller.interpret_buffer()
+
+VALID_COMMANDS = {
+    "[0-9]*h" : lambda: 10,
+    "[0-9]*j" : lambda: 10,
+    "[0-9]*k" : lambda: 10,
+    "[0-9]*l" : lambda: 10,
+    "i"       : lambda: 10,
+    "A"       : lambda: 10,
+    "\^"      : lambda: 10,
+    "\$"      : lambda: 10, 
+    ":w"      : lambda: 10,
+    ":q"      : lambda: 10, 
+    ":wq"     : lambda: 10, 
+    ":q!"     : lambda: 10, 
+    "gg"      : lambda: 10,
+    "G"       : lambda: 10
+}
+
+
+def handle_command(vim_controller, file_interface, event=None):
+    vim_controller.append_buffer(str(event.char))
+    vim_controller.update_display()
+    interpret_buffer(vim_controller, file_interface)
 
 def esc_press(vim_controller, event=None):
     vim_controller.switch_normal()
 
-def enter_press(vim_controller, event=None):
-    vim_controller.interpret_buffer()
+def enter_press(vim_controller, file_interface, event=None):
+    interpret_buffer(vim_controller, file_interface)
+
+def is_valid_command(command):
+    for regex in VALID_COMMANDS:
+        print("printing regex: " + regex + " and command: " + command)
+        if re.match(regex, command):
+            return (True, regex)
+    return (False, None)
+
+def interpret_buffer(vim_controller, file_interface):
+    buffer = vim_controller.get_buffer()
+    values = is_valid_command(buffer)
+    valid = values[0]
+    regex = values[1]
+
+    if valid:
+        vim_controller.reset_buffer()
+        print("printing command and regex: " + buffer + " " + regex)
 
 
 ########

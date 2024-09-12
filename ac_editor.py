@@ -16,9 +16,10 @@ from src.file_datatypes    import UnsavedFile
 from src.file_interface    import FileInterface
 from src.vim_controller    import VimController
 
-############
-# Constants
-############
+###########################################################
+# Constants 
+# (FIXME, theme should be moved to Settings in the future)
+###########################################################
 TITLE = "ac_editor"
 THEME = "clam"
 LOGO_LOCATION = "src/images/logo.png"
@@ -54,7 +55,7 @@ if __name__ == "__main__":
     ###############################
     # Make final aesthetic changes
     ###############################
-    vim_controller.display_message()
+    vim_controller.update_display()
     file_interface.notebook.grid(row=0, column=0, sticky="nsew")
     vim_label.grid(row=1, column=0, sticky="ew")
     window.grid_rowconfigure(0, weight=1)
@@ -70,9 +71,6 @@ if __name__ == "__main__":
         settings.font_type = font_type
         settings.font_size = font_size
 
-    #######################
-    # Initialize aesthetic
-    #######################
 
     ############################################
     # Initialize lambda function map for events
@@ -89,9 +87,9 @@ if __name__ == "__main__":
         "end"          : lambda: end(window, database, settings, file_interface),
         "tab_change"   : lambda event: tab_change(window, file_interface, TITLE), 
         # Vim Commands
-        "vim"          : lambda event: interpret_command(vim_controller, file_interface, event),
+        "vim"          : lambda event: handle_command(vim_controller, file_interface, event),
         "esc"          : lambda event: esc_press(vim_controller),
-        "enter"        : lambda event: enter_press(vim_controller),
+        "enter"        : lambda event: enter_press(vim_controller, file_interface),
     } 
 
 
