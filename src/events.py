@@ -85,9 +85,11 @@ def file_save_as(file_inter, window, TITLE, event=None):
 ################
 
 def handle_command(vim_controller, file_interface, command_map, event=None):
-    vim_controller.append_buffer(str(event.char))
+    vim_controller.append_buffer(event.char)
     vim_controller.update_display()
-    interpret_buffer(vim_controller, file_interface, command_map)
+    ret = interpret_buffer(vim_controller, file_interface, command_map)
+    print("printing ret: " + ret)
+    return ret
 
 def esc_press(vim_controller, event=None):
     vim_controller.switch_normal()
@@ -100,63 +102,89 @@ def backspace_press(vim_controller, event=None):
 
 def is_valid_command(command, valid):
     for regex in valid:
-        print("printing regex: " + regex + " and command: " + command)
         if re.match(regex, command):
             return (True, regex)
     return (False, None)
 
+# Returning break ignores the command to insert the key into the text. 
 def interpret_buffer(vim_controller, file_interface, commands):
     buffer = vim_controller.get_buffer()
+    print("printing buffer: " + buffer)
     values = is_valid_command(buffer, commands)
     valid = values[0]
     regex = values[1]
 
     if valid:
         vim_controller.reset_buffer()
-        # Below is a function call. See "vim_map" in ac_editor.py
-        commands[regex]
+        commands[regex]()
 
-def h(window, vim_controller):
-    return
+    return "break" if valid else None
 
-def j(window, vim_controller):
-    return
+def get_codeview_widget(file_interface):
+    notebook = file_interface.notebook
+    containers = file_interface.containers 
+    index = notebook.index(notebook.select())
+    return containers[index].codeview
 
-def k(window, vim_controller):
-    return
 
-def l(window, vim_controller):
-    return
+def h(file_interface): 
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert-1c")
 
-def i(window, vim_controller): 
-    return
+def j(file_interface):
+    index = file_interface.notebook.index(file_interface.notebook.select())
+    file_interface.containers[index].codeview.mark_set("insert", "insert +1l")
+    print("in j function")
+    # codeview = get_codeview_widget(file_interface)
+    # codeview.mark_set("insert", "insert +1l")
 
-def A(window, vim_controller):
-    return
+def k(file_interface):
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert -1l")
 
-def hat(window, vim_controller):
-    return
+def l(file_interface):
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert+1c")
 
-def dollar(window, vim_controller):
-    return
+def i(file_interface): 
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert-1c")
 
-def w(window, vim_controller):
-    return
+def A(file_interface):
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert-1c")
 
-def q(window, vim_controller):
-    return
+def hat(file_interface):
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert-1c")
 
-def wq(window, vim_controller):
-    return
+def dollar(file_interface):
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert-1c")
 
-def q_no_save(window, vim_controller):
-    return
+def w(file_interface):
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert-1c")
 
-def gg(window, vim_controller):
-    return
+def q(file_interface):
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert-1c")
 
-def G(window, vim_controller):
-    return
+def wq(file_interface):
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert-1c")
+
+def q_no_save(file_interface):
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert-1c")
+
+def gg(file_interface):
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert-1c")
+
+def G(file_interface):
+    codeview = get_codeview_widget(file_interface)
+    codeview.mark_set("insert", "insert-1c")
 
 ########
 # Other

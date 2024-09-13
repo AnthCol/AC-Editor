@@ -1,4 +1,4 @@
-from tkinter   import ttk
+from tkinter import ttk
 
 class FileInterface():
     def __init__(self, window):

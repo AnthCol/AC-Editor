@@ -74,20 +74,20 @@ if __name__ == "__main__":
     ############################################
 
     vim_map = {
-        "[0-9]*h" : lambda: h(window, vim_controller),
-        "[0-9]*j" : lambda: j(window, vim_controller),
-        "[0-9]*k" : lambda: k(window, vim_controller),
-        "[0-9]*l" : lambda: l(window, vim_controller),
-        "i"       : lambda: i(window, vim_controller),
-        "A"       : lambda: A(window, vim_controller),
-        "\^"      : lambda: hat(window, vim_controller),
-        "\$"      : lambda: dollar(window, vim_controller),
-        ":w"      : lambda: w(window, vim_controller),
-        ":q"      : lambda: q(window, vim_controller),
-        ":wq"     : lambda: wq(window, vim_controller),
-        ":q!"     : lambda: q_no_save(window, vim_controller), 
-        "gg"      : lambda: gg(window, vim_controller),
-        "G"       : lambda: G(window, vim_controller)
+        "[0-9]*h" : lambda: h(file_interface),
+        "[0-9]*j" : lambda: j(file_interface),
+        "[0-9]*k" : lambda: k(file_interface),
+        "[0-9]*l" : lambda: l(file_interface),
+        "i"       : lambda: i(file_interface),
+        "A"       : lambda: A(file_interface),
+        "\^"      : lambda: hat(file_interface),
+        "\$"      : lambda: dollar(file_interface),
+        ":w"      : lambda: w(file_interface),
+        ":q"      : lambda: q(file_interface),
+        ":wq"     : lambda: wq(file_interface),
+        ":q!"     : lambda: q_no_save(file_interface), 
+        "gg"      : lambda: gg(file_interface),
+        "G"       : lambda: G(file_interface)
     }
 
 
@@ -108,9 +108,9 @@ if __name__ == "__main__":
         "back"         : lambda event: backspace_press(vim_controller)
     } 
 
-    ##############################
-    # Initialize Non-Vim Bindings
-    ##############################
+    #####################################
+    # Initialize Non-Vim Window Bindings
+    #####################################
     window.protocol("WM_DELETE_WINDOW", event_map["end"])
     window.bind("<Control-s>", event_map["save"])
     window.bind("<Control-Alt-s>", event_map["save_as"])
@@ -118,6 +118,18 @@ if __name__ == "__main__":
     window.bind("<Control-o>", event_map["open"])
     window.bind("<Control-n>", event_map["new"])
     file_interface.notebook.bind("<<NotebookTabChanged>>", event_map["tab_change"])
+
+
+    #################################
+    # Load previous data and display
+    #################################
+    open_files = database.load_files()
+    
+    if len(open_files) == 0:
+        open_files.append(UnsavedFile("", 1, "New " + unsaved_rank(file_interface.containers)))
+    
+    for f in open_files: 
+        file_interface.notebook.add(make_frame(f, settings, file_interface), text=pad(f.name))
 
     ##########################
     # Initialize Vim Bindings
@@ -138,27 +150,16 @@ if __name__ == "__main__":
     for i in range(10):
         vim_commands.append(str(i))
 
-    for command in vim_commands:
-        window.bind(command, event_map["vim"])
-
-    # It is easier to treat these on their own.
-    window.bind("<Escape>", event_map["esc"]) 
-    window.bind("<Return>", event_map["return"])
-    window.bind("<BackSpace>", event_map["back"])
-
-    #################################
-    # Load previous data and display
-    #################################
-    open_files = database.load_files()
-    
-    if len(open_files) == 0:
-        open_files.append(UnsavedFile("", 1, "New " + unsaved_rank(file_interface.containers)))
-    
-    for f in open_files: 
-        file_interface.notebook.add(make_frame(f, settings, file_interface), text=pad(f.name))
-
     for c in file_interface.containers:
-        c.codeview.configure(state="disabled")
+        for command in vim_commands:
+            c.codeview.bind(command, event_map["vim"])
+        # It is easier to treat these on their own.
+        c.codeview.bind("<Escape>", event_map["esc"]) 
+        c.codeview.bind("<Return>", event_map["return"])
+        c.codeview.bind("<BackSpace>", event_map["back"])
+
+    # for c in file_interface.containers:
+    #     c.codeview.configure(state="disabled")
 
     ################
     # Start the GUI
