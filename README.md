@@ -5,9 +5,9 @@ This is a small, lightweight, shortcuts-based editor that I made for myself, int
 
 ## Tech 
 
-[<img src="./docs/images/python_logo.png" height=100/>](https://www.python.org/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[<img src="./docs/images/sqlite_logo.png" height=100/>](https://sqlite.org/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[<img src="./docs/images/tkinter_logo.gif" height=100/>](https://www.tcl.tk/)
+[<img src="./docs/assets/python_logo.png" height=100/>](https://www.python.org/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[<img src="./docs/assets/sqlite_logo.png" height=100/>](https://sqlite.org/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[<img src="./docs/assets/tkinter_logo.gif" height=100/>](https://www.tcl.tk/)
 
 ## Demo Video
 
@@ -60,6 +60,8 @@ The subset of Vim commands supported by this editor are listed below:
 - A (shift + a) (move cursor to end of line and enter INSERT mode)
 - ^ (shift + 6) (move cursor to start of line)
 - $ (shift + 4) (move cursor to end of line)
+- gg            (move cursor to beginning of document)
+- G (shift + g) (move cursor to start of final line of document)
 ```
 
 ## List of Shortcuts
