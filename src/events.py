@@ -126,64 +126,64 @@ def get_codeview_widget(file_interface):
     return containers[index].codeview
 
 
-def h(file_interface): 
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert-1c")
+# def h(file_interface): 
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert-1c")
 
-def j(file_interface):
-    index = file_interface.notebook.index(file_interface.notebook.select())
-    file_interface.containers[index].codeview.mark_set("insert", "insert +1l")
-    print("in j function")
-    # codeview = get_codeview_widget(file_interface)
-    # codeview.mark_set("insert", "insert +1l")
+# def j(file_interface):
+#     index = file_interface.notebook.index(file_interface.notebook.select())
+#     file_interface.containers[index].codeview.mark_set("insert", "insert +1l")
+#     print("in j function")
+#     # codeview = get_codeview_widget(file_interface)
+#     # codeview.mark_set("insert", "insert +1l")
 
-def k(file_interface):
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert -1l")
+# def k(file_interface):
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert -1l")
 
-def l(file_interface):
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert+1c")
+# def l(file_interface):
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert+1c")
 
-def i(file_interface): 
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert-1c")
+# def i(file_interface): 
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert-1c")
 
-def A(file_interface):
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert-1c")
+# def A(file_interface):
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert-1c")
 
-def hat(file_interface):
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert-1c")
+# def hat(file_interface):
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert-1c")
 
-def dollar(file_interface):
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert-1c")
+# def dollar(file_interface):
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert-1c")
 
-def w(file_interface):
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert-1c")
+# def w(file_interface):
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert-1c")
 
-def q(file_interface):
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert-1c")
+# def q(file_interface):
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert-1c")
 
-def wq(file_interface):
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert-1c")
+# def wq(file_interface):
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert-1c")
 
-def q_no_save(file_interface):
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert-1c")
+# def q_no_save(file_interface):
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert-1c")
 
-def gg(file_interface):
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert-1c")
+# def gg(file_interface):
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert-1c")
 
-def G(file_interface):
-    codeview = get_codeview_widget(file_interface)
-    codeview.mark_set("insert", "insert-1c")
+# def G(file_interface):
+#     codeview = get_codeview_widget(file_interface)
+#     codeview.mark_set("insert", "insert-1c")
 
 ########
 # Other
