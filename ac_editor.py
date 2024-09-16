@@ -11,11 +11,12 @@ from src.auxiliary    import make_icon, pad
 from src.gui_helpers  import make_frame
 from src.file_helpers import update_files, unsaved_rank
 
+from src.classes.gui            import GUI
 from src.classes.file           import File
 from src.classes.settings       import Settings
 from src.classes.database       import Database
-from src.classes.file_interface import FileInterface
 from src.classes.vim_controller import VimController
+from src.classes.file_interface import FileInterface
 
 ###########################################################
 # Constants 
@@ -40,34 +41,35 @@ if __name__ == "__main__":
     window.title(TITLE)
     window.wm_iconphoto(False, make_icon(LOGO_LOCATION))
     ttk.Style(window).theme_use(THEME)
-    #vim_label = ttk.Label(window, anchor="w")
+    vim_label = ttk.Label(window, anchor="w")
 
-    # #################
-    # # Necessary Data
-    # #################
+    # ###################
+    # Initialize Objects
+    # ###################
     settings = Settings()
     database = Database()
-    # vim_controller = VimController(vim_label)
-    # file_interface = FileInterface(window)
+    vim_controller = VimController(vim_label)
+    file_notebook = FileInterface(window)
+    gui = GUI(window, file_notebook, vim_controller)
 
-    # ###############################
-    # # Make final aesthetic changes
-    # ###############################
-    # vim_controller.update_display()
-    # file_interface.notebook.grid(row=0, column=0, sticky="nsew")
-    # vim_label.grid(row=1, column=0, sticky="ew")
-    # window.grid_rowconfigure(0, weight=1)
-    # window.grid_columnconfigure(0, weight=1)
+    # ##############################
+    # Make final aesthetic changes
+    # ##############################
+    gui.vim_controller.update_display()
+    gui.file_interface.notebook.grid(row=0, column=0, sticky="nsew")
+    gui.vim_controller.label.grid(row=1, column=0, sticky="ew")
+    gui.window.grid_rowconfigure(0, weight=1)
+    gui.window.grid_columnconfigure(0, weight=1)
  
     # ################
     # # Load settings
     # ################
-    # data = database.load_settings()
-    # if data:
-    #     colour, font_type, font_size = data
-    #     settings.colour    = colour
-    #     settings.font_type = font_type
-    #     settings.font_size = font_size
+    data = database.load_settings()
+    if data:
+        colour, font_type, font_size = data
+        settings.colour    = colour
+        settings.font_type = font_type
+        settings.font_size = font_size
 
     # ############################################
     # # Initialize lambda function map for events

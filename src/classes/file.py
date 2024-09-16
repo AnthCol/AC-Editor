@@ -7,4 +7,5 @@ class File:
         self.name = name
         self.rank = rank
         self.content = content if content != None else ""
-        self.is_unsaved = True if content != None else False
+        self.is_unsaved = is_unsaved
+        self.codeview = None
