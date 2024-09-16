@@ -1,7 +1,7 @@
 import os
 import pygments.lexers
 
-from .classes.file import File
+from .file import File
 
 def update_files(containers):
     # rank = 1

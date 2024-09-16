@@ -14,9 +14,6 @@ class VimController:
     def append_buffer(self, char):
         self.command_buffer += char
 
-    def get_buffer(self):
-        return self.command_buffer
-
     def update_display(self):
         text = self.mode_message + self.command_buffer
         self.label.config(text=text)
