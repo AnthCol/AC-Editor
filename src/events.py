@@ -4,12 +4,12 @@ import os
 import tkinter as tk
 
 
-from tkinter         import filedialog
+from tkinter       import filedialog
 
-from .auxiliary      import pad
-from .gui_helpers    import make_frame, show_latest_page
-from .file_helpers   import unsaved_rank, determine_rank, remove_file, codeview_contents
-from .file_datatypes import SavedFile, UnsavedFile
+from .auxiliary    import pad
+from .gui_helpers  import make_frame, show_latest_page
+from .file_helpers import unsaved_rank, determine_rank, remove_file, codeview_contents
+from .classes.file import File
 
 
 
@@ -109,7 +109,6 @@ def is_valid_command(command, valid):
 # Returning break ignores the command to insert the key into the text. 
 def interpret_buffer(vim_controller, file_interface, commands):
     buffer = vim_controller.get_buffer()
-    print("printing buffer: " + buffer)
     values = is_valid_command(buffer, commands)
     valid = values[0]
     regex = values[1]
