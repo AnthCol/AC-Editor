@@ -1,71 +1,51 @@
-import os
-import sys
-import pygments.lexers
-
 import tkinter as tk
 
-from tkinter               import ttk
+from tkinter     import ttk
+from typing      import List
+from chlorophyll import CodeView
 
-from src.events       import *
-from src.auxiliary    import make_icon, pad
-# from src.gui_helpers  import make_frame
-# from src.file_helpers import update_files, unsaved_rank
-
-from src.gui            import GUI
-from src.file           import File
-from src.settings       import Settings
+from src.file           import File, extract_file
+from src.window         import bind_window
 from src.database       import Database
+from src.settings       import Settings
+from src.notebook       import show_last
+from src.codeview       import make_codeview, fill_codeview, bind_codeview
+from src.auxiliary      import make_icon
 from src.vim_controller import VimController
-from src.file_interface import FileInterface
-
-###########################################################
-# Constants 
-# (FIXME, theme should be moved to Settings in the future)
-###########################################################
-TITLE = "ac_editor"
-THEME = "clam"
-LOGO_LOCATION = "src/assets/logo.png"
-
 
 # FIXME - Need to save the index for the most recently used file somewhere 
-def end(gui, database, settings):
-    # update_files(file_interface.containers)
-    # database.close([c.file for c in file_interface.containers], settings)
-    gui.window.destroy()
+# need to write to database as well - see former commits 
+def end(window):
+    window.destroy()
 
 if __name__ == "__main__":
-    ############################
     # Initialize GUI components
-    ############################
     window = tk.Tk()
-    window.title(TITLE)
-    window.wm_iconphoto(False, make_icon(LOGO_LOCATION))
-    ttk.Style(window).theme_use(THEME)
+    window.title("ac_editor")
+    window.wm_iconphoto(False, make_icon("src/assets/logo.png"))
+    ttk.Style(window).theme_use("clam")
     vim_label = ttk.Label(window, anchor="w")
 
-    #####################
     # Initialize Objects
-    #####################
     settings = Settings()
     database = Database()
-    vim_controller = VimController(vim_label)
-    file_interface = FileInterface(window)
-    gui = GUI(window, file_interface, vim_controller)
+    vim_status = VimController()
 
-    ################################
-    # Make final aesthetic changes
-    ################################
-    vim_controller.update_display()
-    file_interface.notebook.grid(row=0, column=0, sticky="nsew")
-    vim_controller.label.grid(row=1, column=0, sticky="ew")
+    # Indices of these will all correspond to one another
+    # codeviews[1] = codeview for files[1]
+    files : List[File] = []
+    codeviews : List[CodeView] = []
+    notebook = ttk.Notebook(window)
+
+    vim_label.config(text=vim_status.message)
+    notebook.grid(row=0, column=0, sticky="nsew")
+    vim_label.grid(row=1, column=0, sticky="ew")
     window.grid_rowconfigure(0, weight=1)
     window.grid_columnconfigure(0, weight=1)
-    window.protocol("WM_DELETE_WINDOW", lambda: end(gui, database, settings))
+    window.protocol("WM_DELETE_WINDOW", lambda: end(window))
+    bind_window(window)
 
 
-    ################
-    # Load settings
-    ################
     data = database.load_settings()
     if data:
         colour, font_type, font_size = data
@@ -73,51 +53,31 @@ if __name__ == "__main__":
         settings.font_type = font_type
         settings.font_size = font_size
 
-    ##############################################
-    # Initialize lambda function map for events
-    ##############################################
+    db_files = database.load_files()
 
-    # vim_map = {
-    #     "[0-9]*h" : lambda: h(file_interface),
-    #     "[0-9]*j" : lambda: j(file_interface),
-    #     "[0-9]*k" : lambda: k(file_interface),
-    #     "[0-9]*l" : lambda: l(file_interface),
-    #     "i"       : lambda: i(file_interface),
-    #     "A"       : lambda: A(file_interface),
-    #     "\^"      : lambda: hat(file_interface),
-    #     "\$"      : lambda: dollar(file_interface),
-    #     ":w"      : lambda: w(file_interface),
-    #     ":q"      : lambda: q(file_interface),
-    #     ":wq"     : lambda: wq(file_interface),
-    #     ":q!"     : lambda: q_no_save(file_interface), 
-    #     "gg"      : lambda: gg(file_interface),
-    #     "G"       : lambda: G(file_interface)
-    # }
-
-    #################################
-    # Load previous data and display
-    #################################
-    open_files = database.load_files()
-    
-    if len(open_files) == 0:
+    if len(db_files) == 0:
         file = File(path=None, 
-                    name="New File",
-                    rank=1, 
-                    content=None, 
+                    name="New 1",
+                    rank=1,
+                    content=None,
                     is_unsaved=True)
-        open_files.append(file)
+        codeview, frame = make_codeview(notebook, settings)
+        fill_codeview(codeview, file)
+        bind_codeview(codeview)
 
-        file = File(path=None, 
-                    name="New File 2",
-                    rank=1, 
-                    content=None, 
-                    is_unsaved=True)
-        open_files.append(file)
-    
-    for file in open_files: 
-        gui.add_file(file, settings)
+        files.append(file)
+        codeviews.append(codeview)
+        notebook.add(frame, text=file.name)
+    else:
+        for db_file in db_files:
+            codeview, frame = make_codeview(notebook, settings)        
+            file = extract_file(db_file)
+            fill_codeview(codeview, file)
+            bind_codeview(codeview)
 
-    ################
-    # Start the GUI
-    ################
+            files.append(file)
+            codeviews.append(codeview)
+            notebook.add(frame, text=file.name)
+
+    show_last(notebook)
     window.mainloop()

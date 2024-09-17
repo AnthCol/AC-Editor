@@ -8,4 +8,12 @@ class File:
         self.rank = rank
         self.content = content if content != None else ""
         self.is_unsaved = is_unsaved
-        self.codeview = None
+
+def extract_file(db_file):
+    path, name, rank, content, is_unsaved = db_file
+    file = File(path=path,
+                name=name,
+                rank=rank,
+                content=content,
+                is_unsaved=is_unsaved)
+    return file
