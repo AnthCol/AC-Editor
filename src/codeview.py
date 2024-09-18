@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from chlorophyll import CodeView
 
-from .globals import WINDOW_EVENTS
+from .window_events import WINDOW_EVENTS
 
 VIM_CHARS = [
     "<i>", 
