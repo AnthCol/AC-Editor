@@ -4,13 +4,14 @@ from tkinter     import ttk
 from typing      import List
 from chlorophyll import CodeView
 
-from src.helper         import *
-from src.types          import *
-# from src.settings       import Settings
-# from src.notebook       import show_last
-# from src.codeview       import make_codeview, fill_codeview, bind_codeview
-# from src.auxiliary      import make_icon
-from src.vim_controller import VimController
+from gui    import bind_window, make_codeview, fill_codeview, bind_codeview, make_icon, show_last
+from helper import extract_file, end
+
+from classes.file           import File
+from classes.database       import Database
+from classes.settings       import Settings
+from classes.vim_controller import VimController
+
 
 # FIXME - Need to save the index for the most recently used file somewhere 
 # need to write to database as well - see former commits 
