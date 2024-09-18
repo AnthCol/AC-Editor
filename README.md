@@ -19,7 +19,7 @@ To be completed.
 
 ## Usage
 
-To use this project, clone the repository, then run the following commands:
+To use this project, clone the repository, then run*
 
 ```bash
 # To install the necessary dependencies for this project
@@ -30,7 +30,11 @@ python3 -m pip install -r requirements.txt
 
 ```bash
 # To start up the GUI
-python3 ac_editor.py
+python3 src/ac_editor.py
+
+# There are also scripts to run it included for you
+./run.ps1 
+./run.sh
 ```
 
 ## Motivation
