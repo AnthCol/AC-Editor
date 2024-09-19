@@ -59,7 +59,7 @@ class Database():
 
     def insert_file(self, file):
         data = (file.path, file.name, file.rank, file.content, file.is_unsaved)
-        self.conn.execute("INSERT INTO files (PATH, NAME, RANK, CONTENT, IS_UNSAVED)", data)
+        self.conn.execute("INSERT INTO files (PATH, NAME, RANK, CONTENT, IS_UNSAVED) VALUES (?, ?, ?, ?, ?)", data)
 
     # FIXME maybe in the future we don't bother clearing the table and find a way 
     # to update them instead?

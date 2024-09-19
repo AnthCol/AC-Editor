@@ -116,15 +116,6 @@ def fill_codeview(codeview, file):
         codeview.insert(tk.END, content)
 
 
-def extract_file(db_file):
-    path, name, rank, content, is_unsaved = db_file
-    file = File(path=path,
-                name=name,
-                rank=rank,
-                content=content,
-                is_unsaved=is_unsaved)
-    return file
-
 def determine_name():
     global files
     values = []
@@ -150,13 +141,14 @@ def new():
                 content=None,
                 is_unsaved=True) 
     add_file(file)
+    show_last()
 
 def update_files():
     global files, codeviews
     for rank in range(len(files)):
         f = files[rank]
         if f.is_unsaved:
-            f.content = codeview_contents()
+            f.content = codeview_contents(codeviews[rank])
         f.rank = rank + 1
 
 def add_file(file):
@@ -169,7 +161,9 @@ def add_file(file):
     notebook.add(frame, text=file.name)
 
 def end():
-    global window
+    global window, database, files, settings
+    update_files()
+    database.close([f for f in files], settings)
     window.destroy()
 
 def show_last():
@@ -242,7 +236,7 @@ def codeview_contents(codeview):
 
 def close():
     global files, notebook, codeviews
-    index = notebook.index(notebook.select())
+    index = current_index()
     file = files[index]
     content = codeview_contents(codeviews[index])
     save = False
@@ -382,9 +376,8 @@ if __name__ == "__main__":
                     is_unsaved=True)
         add_file(file)
     else:
-        for db_file in db_files: 
-            file = extract_file(db_file)
-            add_file(file)
+        for db_file in db_files:
+            add_file(db_file)
 
     show_last()
     window.mainloop()
