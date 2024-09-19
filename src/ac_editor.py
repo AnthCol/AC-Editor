@@ -1,7 +1,8 @@
+import os
 import re
 import tkinter as tk
 
-from tkinter     import ttk, PhotoImage
+from tkinter     import ttk, PhotoImage, filedialog
 from typing      import List
 from chlorophyll import CodeView
 
@@ -19,7 +20,7 @@ WINDOW_EVENTS = {
     "save"       : lambda event: save(),
     "save_as"    : lambda event: save_as(), 
     "close"      : lambda event: close(), 
-    "tab_change" : lambda event: tab_change(),
+    "tab_change" : lambda event: update_title(),
     "vim"        : lambda event: vim(event), 
     "esc"        : lambda event: esc(), 
     "ret"        : lambda event: ret(),
@@ -33,6 +34,10 @@ VIM_CHARS = [
     "<k>", 
     "<l>", 
     "<g>",
+    "<w>",
+    "<q>",
+    "<Key-colon>",
+    "<Key-exclam>",
     "<Shift-A>", 
     "<Shift-G>",
     "<Shift-asciicircum>", 
@@ -87,8 +92,7 @@ def bind_codeview(codeview):
     codeview.bind("<BackSpace>", WINDOW_EVENTS["back"])
 
 def make_codeview():
-    global notebook
-    global settings
+    global notebook, settings
     frame = ttk.Frame(notebook)
     codeview = CodeView(frame,
                         insertwidth=10,
@@ -123,22 +127,40 @@ def extract_file(db_file):
 
 def determine_name():
     global files
-    return ""
+    values = []
+    for f in files:
+        if f.is_unsaved:
+            values.append(int(f.name.split()[1]))
+    values.sort()
+    count = 1
+    for v in values:
+        if v != count: 
+            break
+        count += 1
+    return "New " + str(count)
 
 def determine_rank():
-    global files
-    return 1
+    global files 
+    return len(files) + 1
 
 def new():
-    global notebook
-    global settings
-    global codeviews
-    global files
     file = File(path=None, 
                 name=determine_name(),
                 rank=determine_rank(),
                 content=None,
                 is_unsaved=True) 
+    add_file(file)
+
+def update_files():
+    global files, codeviews
+    for rank in range(len(files)):
+        f = files[rank]
+        if f.is_unsaved:
+            f.content = codeview_contents()
+        f.rank = rank + 1
+
+def add_file(file):
+    global files, codeviews, notebook
     codeview, frame = make_codeview()
     fill_codeview(codeview, file)
     bind_codeview(codeview)
@@ -163,15 +185,80 @@ def make_icon(path):
     return PhotoImage(file=path)
 
 def load():
-    return
+    global notebook
+    path = filedialog.askopenfilename()
+    if path != "":
+        name = os.path.basename(path)
+        file = File(path=path,
+                    name=name,
+                    rank=determine_rank(),
+                    content=None,
+                    is_unsaved=False)        
+        add_file(file)
+        show_last()
+
+def current_index():
+    global notebook
+    return notebook.index(notebook.select())
+
 def save():
-    return
+    global files, codeviews
+    index = current_index()
+    file = files[index]
+    if file.is_unsaved:
+        save_as()
+    else:
+        with open(file.path, "w") as f:
+            f.write(codeview_contents(codeviews[index]))
+
 def save_as():
-    return
+    global files, codeviews, notebook
+    path = filedialog.asksaveasfilename()
+    if path == "":
+        return
+    index = current_index()
+    old_file = files[index]
+    new_file = File(path=path,
+                    name=os.path.basename(path),
+                    rank=old_file.rank,
+                    content="",
+                    is_unsaved=False)
+    files[index] = new_file
+    notebook.tab(index, text=new_file.name)
+
+    with open(path, "w") as f:
+        f.write(codeview_contents(codeviews[index]))
+    update_title()
+
+def update_title():
+    global files, window
+    index = current_index()
+    file = files[index]
+    title = file.name if file.is_unsaved else file.path
+    window.title("ac_editor - " + title)
+
+def codeview_contents(codeview):
+    return codeview.get("1.0", "end-1c")
+
 def close():
-    return
-def tab_change():
-    return
+    global files, notebook, codeviews
+    index = notebook.index(notebook.select())
+    file = files[index]
+    content = codeview_contents(codeviews[index])
+    save = False
+    if file.is_unsaved and content != "":
+        save = tk.messagebox.askyesnocancel("Save File", "Do you want to save this file?")
+    # Returns None if cancel
+    if save == True:
+        save_as()
+    elif save == False:
+        remove_file(index)
+
+def remove_file(index):
+    global files, codeviews, notebook
+    del codeviews[index]
+    del files[index]
+    notebook.forget(index)
 
 def is_valid_vim(command):
     for regex in VIM_REGEX:
@@ -183,9 +270,7 @@ def process_vim(command):
     global vim_status
     values = is_valid_vim(command)
     valid = values[0]
-    regex = values[1]
-
-    print("printing in process vim: " + str(valid) + " " + str(regex))
+    regex = values[1] 
     if valid:
         VIM_REGEX[regex]()
         vim_status.reset_buffer()
@@ -218,32 +303,43 @@ def back(event=None):
 # VIM_REGEX functions
 ######################
 def h():
-    return
+    print("in h")
+
 def j():
-    print("in j function")
-    return
+    print("in j")
+
 def k():
-    return
+    print("in k")
+
 def l():
-    return
+    print("in l")
+
 def i():
-    return
+    print("in i")
+
 def A():
-    return
+    print("in A")
+
 def hat():
-    return
+    print("in hat")
+
 def dollar():
-    return
+    print("in dollar")
+
 def w():
-    return
+    print("in w")
+
 def q(save):
-    return
+    print("in q")
+
 def wq():
-    return
+    print("in wq")
+
 def gg():
-    return
+    print("in gg")
+
 def G():
-    return
+    print("in G")
 
 
 #######
@@ -284,24 +380,11 @@ if __name__ == "__main__":
                     rank=1,
                     content=None,
                     is_unsaved=True)
-        codeview, frame = make_codeview()
-        fill_codeview(codeview, file)
-        bind_codeview(codeview)
-
-        files.append(file)
-        codeviews.append(codeview)
-        notebook.add(frame, text=file.name)
+        add_file(file)
     else:
         for db_file in db_files: 
-            codeview, frame = make_codeview(notebook, settings)        
             file = extract_file(db_file)
-            fill_codeview(codeview, file)
-            bind_codeview(codeview)
-            files.append(file)
-            codeviews.append(codeview)
-            notebook.add(frame, text=file.name)
+            add_file(file)
 
     show_last()
     window.mainloop()
-
-
