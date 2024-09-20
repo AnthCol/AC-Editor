@@ -261,7 +261,6 @@ def is_valid_vim(command):
     return (False, None)
 
 def process_vim(command):
-    global vim_status
     values = is_valid_vim(command)
     valid = values[0]
     regex = values[1] 
@@ -273,11 +272,14 @@ def process_vim(command):
     return "break" if valid else None
 
 # Called whenever any of the valid vim characters are pressed
+# This excludes special ones like enter, backspace and escape.
 def vim(event=None):
     global vim_status
-    vim_status.append_buffer(event.char)
-    vim_status.update_display()
-    return process_vim(vim_status.command_buffer)
+    if not vim_status.in_insert():
+        vim_status.append_buffer(event.char)
+        vim_status.update_display()
+        return process_vim(vim_status.command_buffer)
+    return None 
 
 ########################
 # Vim Related Functions

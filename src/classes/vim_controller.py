@@ -11,6 +11,12 @@ class VimController:
         self.command_buffer = EMPTY_BUFFER
         self.label = label
 
+    def in_normal(self):
+        return self.mode == NORMAL
+
+    def in_insert(self):
+        return self.mode == INSERT
+
     def append_buffer(self, char):
         self.command_buffer += char
 
