@@ -6,10 +6,10 @@ from tkinter     import ttk, PhotoImage, filedialog
 from typing      import List
 from chlorophyll import CodeView
 
-from classes.file           import File
-from classes.database       import Database
-from classes.settings       import Settings
-from classes.vim_controller import VimController
+from .classes.file           import File
+from .classes.database       import Database
+from .classes.settings       import Settings
+from .classes.vim_controller import VimController
 
 ##########
 # Globals
@@ -80,7 +80,6 @@ vim_controller = VimController(ttk.Label(window, anchor="w"))
 files : List[File] = []
 codeviews : List[CodeView] = []
 notebook = ttk.Notebook(window)
-
 
 
 ############
@@ -173,9 +172,6 @@ def end():
 def show_last():
     global notebook
     notebook.select(notebook.index("end") - 1)
-
-def tab_change(file):
-    return
 
 def make_icon(path):
     return PhotoImage(file=path)

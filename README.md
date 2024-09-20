@@ -36,7 +36,7 @@ python3 -m pip install -r requirements.txt
 
 ```bash
 # To start up the editor
-python3 src/ac_editor.py
+python3 -m src.ac_editor
 
 # There are also scripts to run it included for you
 ./run.ps1 
