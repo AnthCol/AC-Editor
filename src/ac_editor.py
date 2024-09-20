@@ -20,7 +20,7 @@ WINDOW_EVENTS = {
     "save"       : lambda event: save(),
     "save_as"    : lambda event: save_as(), 
     "close"      : lambda event: close(), 
-    "tab_change" : lambda event: update_title(),
+    "tab_change" : lambda event: update_display(current_index()),
     "vim"        : lambda event: vim(event), 
     "esc"        : lambda event: esc(), 
     "ret"        : lambda event: ret(),
@@ -75,10 +75,12 @@ VIM_REGEX = {
 window = tk.Tk()
 settings = Settings()
 database = Database()
-vim_status = VimController(ttk.Label(window, anchor="w"))
+vim_label = ttk.Label(window, anchor="w")
+vim_controller = VimController(ttk.Label(window, anchor="w"))
 files : List[File] = []
 codeviews : List[CodeView] = []
 notebook = ttk.Notebook(window)
+
 
 
 ############
@@ -152,13 +154,15 @@ def update_files():
         f.rank = rank + 1
 
 def add_file(file):
-    global files, codeviews, notebook
+    global files, codeviews, notebook, vim_controller
     codeview, frame = make_codeview()
     fill_codeview(codeview, file)
     bind_codeview(codeview)
     files.append(file)
     codeviews.append(codeview)
     notebook.add(frame, text=file.name)
+    vim_controller.new_buffer()
+    vim_controller.update_display(current_index())
 
 def end():
     global window, database, files, settings
@@ -170,10 +174,8 @@ def show_last():
     global notebook
     notebook.select(notebook.index("end") - 1)
 
-def update_title(file):
-    global window
-    title = file.name if file.is_unsaved else file.path
-    window.title("ac_editor - " + title)
+def tab_change(file):
+    return
 
 def make_icon(path):
     return PhotoImage(file=path)
@@ -224,6 +226,11 @@ def save_as():
         f.write(codeview_contents(codeviews[index]))
     update_title()
 
+def update_display(index):
+    global vim_controller
+    update_title()
+    vim_controller.update_display(index)
+
 def update_title():
     global files, window
     index = current_index()
@@ -261,12 +268,13 @@ def is_valid_vim(command):
     return (False, None)
 
 def process_vim(command):
+    global vim_controller
     values = is_valid_vim(command)
     valid = values[0]
     regex = values[1] 
     if valid:
         VIM_REGEX[regex]()
-        vim_status.reset_buffers()
+        vim_controller.reset_buffers(current_index())
     
     # Returning "break" prevents default behaviour
     return "break" if valid else None
@@ -274,37 +282,43 @@ def process_vim(command):
 # Called whenever any of the valid vim characters are pressed
 # This excludes special ones like enter, backspace and escape.
 def vim(event=None):
-    global vim_status
-    if not vim_status.in_insert():
-        vim_status.append_buffer(event.char)
-        vim_status.update_display()
-        return process_vim(vim_status.command_buffer)
+    global vim_controller
+    index = current_index()
+    if not vim_controller.in_insert(index):
+        vim_controller.append_buffer(event.char, index)
+        vim_controller.update_display(index)
+        return process_vim(vim_controller.current_command(index))
     return None 
 
 ########################
 # Vim Related Functions
 ########################
 def esc():
-    global vim_status
-    vim_status.switch_normal()
+    global vim_controller
+    index = current_index()
+    vim_controller.switch_normal(index)
 
 def ret():
-    global vim_status
-    process_vim(vim_status.command_buffer)
+    global vim_controller
+    index = current_index()
+    process_vim(vim_controller.current_command(index))
 
 def back(event=None):
-    global vim_status
-    vim_status.delete_char()
+    global vim_controller
+    index = current_index()
+    vim_controller.delete_char(index)
 
 def current_codeview():
     global codeviews
     return codeviews[current_index()]
 
 def parse_buffer():
-    global vim_status
-    if len(vim_status.command_buffer) == 1:
+    global vim_controller
+    index = current_index()
+    buffer = vim_controller.current_command(index)
+    if len(buffer) == 1:
         return 1
-    parts = re.split('h|j|k|l', vim_status.command_buffer)
+    parts = re.split('h|j|k|l', buffer)
     return str(parts[0])
 
 ######################
@@ -318,12 +332,12 @@ def h():
 def j():
     codeview = current_codeview()
     amount = parse_buffer()
-    codeview.mark_set("insert", f"insert+{amount} l")
+    codeview.mark_set("insert", f"insert +{amount} l")
 
 def k():
     codeview = current_codeview()
     amount = parse_buffer()
-    codeview.mark_set("insert", f"insert-{amount} l")
+    codeview.mark_set("insert", f"insert -{amount} l")
 
 def l():
     codeview = current_codeview()
@@ -331,8 +345,9 @@ def l():
     codeview.mark_set("insert", f"insert+{amount} c")
 
 def i():
-    global vim_status
-    vim_status.switch_insert()
+    global vim_controller
+    index = current_index()
+    vim_controller.switch_insert(index)
 
 def A():
     dollar()
@@ -379,9 +394,8 @@ if __name__ == "__main__":
     window.wm_iconphoto(False, icon)
     ttk.Style(window).theme_use("clam")
 
-    vim_status.update_display()
     notebook.grid(row=0, column=0, sticky="nsew")
-    vim_status.label_grid()
+    vim_controller.label_grid()
     window.grid_rowconfigure(0, weight=1)
     window.grid_columnconfigure(0, weight=1)
     window.protocol("WM_DELETE_WINDOW", lambda: end())
