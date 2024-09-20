@@ -25,15 +25,15 @@ class VimController:
         self.command_buffer = self.command_buffer[:-1]
         self.update_display()
 
-    def reset_buffer(self):
+    def reset_buffers(self):
         self.mode_message = NORMAL_MESSAGE if (self.mode == NORMAL) else INSERT_MESSAGE
         self.command_buffer = EMPTY_BUFFER
         self.update_display()
 
     def switch_normal(self):
         self.mode = NORMAL
-        self.reset_buffer()
+        self.reset_buffers()
 
     def switch_insert(self):
         self.mode = INSERT
-        self.reset_buffer()
+        self.reset_buffers()

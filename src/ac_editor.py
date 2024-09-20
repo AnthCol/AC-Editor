@@ -267,14 +267,17 @@ def process_vim(command):
     regex = values[1] 
     if valid:
         VIM_REGEX[regex]()
-        vim_status.reset_buffer()
+        vim_status.reset_buffers()
+    
+    # Returning "break" prevents default behaviour
+    return "break" if valid else None
 
 # Called whenever any of the valid vim characters are pressed
 def vim(event=None):
     global vim_status
     vim_status.append_buffer(event.char)
     vim_status.update_display()
-    process_vim(vim_status.command_buffer)
+    return process_vim(vim_status.command_buffer)
 
 ########################
 # Vim Related Functions
@@ -291,49 +294,78 @@ def back(event=None):
     global vim_status
     vim_status.delete_char()
 
+def current_codeview():
+    global codeviews
+    return codeviews[current_index()]
 
+def parse_buffer():
+    global vim_status
+    if len(vim_status.command_buffer) == 1:
+        return 1
+    parts = re.split('h|j|k|l', vim_status.command_buffer)
+    return str(parts[0])
 
 ######################
 # VIM_REGEX functions
 ######################
 def h():
-    print("in h")
+    codeview = current_codeview()
+    amount = parse_buffer()
+    codeview.mark_set("insert", f"insert-{amount} c")
 
 def j():
-    print("in j")
+    codeview = current_codeview()
+    amount = parse_buffer()
+    codeview.mark_set("insert", f"insert+{amount} l")
 
 def k():
-    print("in k")
+    codeview = current_codeview()
+    amount = parse_buffer()
+    codeview.mark_set("insert", f"insert-{amount} l")
 
 def l():
-    print("in l")
+    codeview = current_codeview()
+    amount = parse_buffer()
+    codeview.mark_set("insert", f"insert+{amount} c")
 
 def i():
-    print("in i")
+    global vim_status
+    vim_status.switch_insert()
 
 def A():
-    print("in A")
+    dollar()
+    i()
 
 def hat():
-    print("in hat")
+    codeview = current_codeview()
+    codeview.mark_set("insert", "insert linestart")
 
 def dollar():
-    print("in dollar")
-
-def w():
-    print("in w")
-
-def q(save):
-    print("in q")
-
-def wq():
-    print("in wq")
+    codeview = current_codeview()
+    codeview.mark_set("insert", "insert lineend")
 
 def gg():
-    print("in gg")
+    codeview = current_codeview()
+    codeview.mark_set("insert", "1.0")
 
 def G():
-    print("in G")
+    codeview = current_codeview()
+    codeview.mark_set("insert", "end")
+    hat()
+
+def w():
+    save()
+
+def q(save):
+    if save:
+        close()
+    else:
+        remove_file()
+
+def wq():
+    save()
+
+
 
 
 #######
