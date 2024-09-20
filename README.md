@@ -7,7 +7,8 @@ This is a small, lightweight, shortcuts-based editor that I made for myself, int
 
 [<img src="./docs/assets/python_logo.png" height=100/>](https://www.python.org/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [<img src="./docs/assets/sqlite_logo.png" height=100/>](https://sqlite.org/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[<img src="./docs/assets/tkinter_logo.gif" height=100/>](https://www.tcl.tk/)
+[<img src="./docs/assets/tkinter_logo.gif" height=100/>](https://www.tcl.tk/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[<img src="./docs/assets/pytest_logo.png" height=100/>](https://docs.pytest.org/en/stable/)
 
 ## Demo Video
 
@@ -19,22 +20,36 @@ To be completed.
 
 ## Usage
 
-To use this project, clone the repository, then run*
+To use this project, follow the instructions below from the top level directory.
 
 ```bash
 # To install the necessary dependencies for this project
 pip install -r requirements.txt 
 # or
 python3 -m pip install -r requirements.txt
+
+# There are also scripts to run it included for you
+# They will perform the second option above
+./run.ps1 -install
+./run.sh -install
 ```
 
 ```bash
-# To start up the GUI
+# To start up the editor
 python3 src/ac_editor.py
 
 # There are also scripts to run it included for you
 ./run.ps1 
 ./run.sh
+```
+
+```bash
+# To run tests
+pytest
+
+# There are also scripts to run it included for you
+./run.ps1 -test
+./run.sh -test
 ```
 
 ## Motivation
