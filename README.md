@@ -14,9 +14,8 @@ This is a small, lightweight, shortcuts-based editor that I made for myself, int
 
 To be completed.
 
-## Screenshots
-
-To be completed.
+## Screenshot
+<img src="./docs/assets/screenshot.png" height=400/>
 
 ## Usage
 
