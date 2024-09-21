@@ -259,7 +259,7 @@ def remove_file(index):
 
 def is_valid_vim(command):
     for regex in VIM_REGEX:
-        if re.match(regex, command):
+        if re.fullmatch(regex, command):
             return (True, regex)
     return (False, None)
 
