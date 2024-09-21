@@ -2,9 +2,11 @@ import os
 import re
 import tkinter as tk
 
-from tkinter     import ttk, PhotoImage, filedialog
-from typing      import List
-from chlorophyll import CodeView
+from tkinter         import ttk, PhotoImage, filedialog, TclError
+from typing          import List
+from chlorophyll     import CodeView
+from pygments.util   import ClassNotFound
+from pygments.lexers import TextLexer, get_lexer_for_filename
 
 from .classes.file           import File
 from .classes.database       import Database
@@ -92,13 +94,27 @@ def bind_codeview(codeview):
     codeview.bind("<Return>", WINDOW_EVENTS["ret"])
     codeview.bind("<BackSpace>", WINDOW_EVENTS["back"])
 
-def make_codeview():
+def determine_lexer(file):
+    lexer = TextLexer
+    if not file.is_unsaved:
+        try:
+            lexer = get_lexer_for_filename(file.name)
+        # For whatever reason, this gives an error at program exit, but everything works fine
+        # TypeError doesn't inherit from BaseException, but it gets caught and used....
+        # Leaving it for now, FIXME in the future. 
+        except ClassNotFound:
+            lexer = TextLexer  
+    return lexer
+
+def make_codeview(file):
     global notebook, settings
     frame = ttk.Frame(notebook)
     codeview = CodeView(frame,
-                        insertwidth=10,
                         color_scheme=settings.colour,
-                        font=(settings.font_type, settings.font_size))
+                        font=(settings.font_type, settings.font_size),
+                        lexer=determine_lexer(file))
+    # Jank has to be set after constructor for some reason...
+    codeview.config(insertwidth=7)
     codeview.pack(fill="both", expand=True)
     return (codeview, frame)
 
@@ -154,7 +170,7 @@ def update_files():
 
 def add_file(file):
     global files, codeviews, notebook, vim_controller
-    codeview, frame = make_codeview()
+    codeview, frame = make_codeview(file)
     fill_codeview(codeview, file)
     bind_codeview(codeview)
     files.append(file)
@@ -167,6 +183,7 @@ def end():
     global window, database, files, settings
     update_files()
     database.close([f for f in files], settings)
+    window.quit()
     window.destroy()
 
 def show_last():
@@ -256,6 +273,8 @@ def remove_file(index):
     del codeviews[index]
     del files[index]
     notebook.forget(index)
+    if len(files) == 0:
+        new()
 
 def is_valid_vim(command):
     for regex in VIM_REGEX:

@@ -6,7 +6,6 @@ INSERT_MESSAGE = "--INSERT--    |    "
 NORMAL_MESSAGE = "--NORMAL--    |    "
 EMPTY_BUFFER = ""
 
-
 class VimBuffer:
     def __init__(self):
         self.mode = NORMAL
