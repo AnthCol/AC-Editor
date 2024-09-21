@@ -55,20 +55,20 @@ VIM_CHARS = [
 ]
 
 VIM_REGEX = {
-    "[0-9]*h" : lambda: h(),
-    "[0-9]*j" : lambda: j(),
-    "[0-9]*k" : lambda: k(),
-    "[0-9]*l" : lambda: l(),
-    "i"       : lambda: i(),
-    "A"       : lambda: A(),
-    "\\^"     : lambda: hat(),
-    "\\$"     : lambda: dollar(), 
-    ":w"      : lambda: w(),
-    ":q"      : lambda: q(save=True), 
-    ":wq"     : lambda: wq(), 
-    ":q!"     : lambda: q(save=False), 
-    "gg"      : lambda: gg(),
-    "G"       : lambda: G()
+    "([1-9]+[0-9]*)*h" : lambda: h(),
+    "([1-9]+[0-9]*)*j" : lambda: j(),
+    "([1-9]+[0-9]*)*k" : lambda: k(),
+    "([1-9]+[0-9]*)*l" : lambda: l(),
+    "i"   : lambda: i(),
+    "A"   : lambda: A(),
+    "\\^" : lambda: hat(),
+    "\\$" : lambda: dollar(), 
+    ":w"  : lambda: w(),
+    ":q"  : lambda: q(save=True), 
+    ":wq" : lambda: wq(), 
+    ":q!" : lambda: q(save=False), 
+    "gg"  : lambda: gg(),
+    "G"   : lambda: G()
 }
 
 # Global GUI state (I don't like it either)
