@@ -1,4 +1,4 @@
-# ac_editor
+# ac_editor (Work in Progress)
 Welcome to ac_editor!<br> 
 This is a small, lightweight, shortcuts-based editor that I made for myself, intended to be used primarily for note-taking. 
 
