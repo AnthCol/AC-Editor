@@ -56,6 +56,20 @@ VIM_CHARS = [
     "9"
 ]
 
+# YIKES
+# Pretty brutal, but basically every non-special vim key is being assigned to a function
+# that will check which mode the program is in to determine if the keypress is valid
+NON_VIM_CHARS = [
+    '<a>', '<b>', '<c>', '<d>', '<e>', '<f>', '<g>', '<m>', 
+    '<p>', '<r>', '<t>', '<u>', '<v>', '<w>', '<x>', '<y>', '<z>',
+    '<B>', '<C>', '<D>', '<E>', '<F>', '<H>', '<I>', '<J>', '<K>', '<L>', '<M>', '<N>', 
+    '<O>', '<P>', '<Q>', '<R>', '<S>', '<T>', '<U>', '<V>', '<W>', '<X>', '<Y>', '<Z>',
+    '<less>', '<comma>', '<greater>', '<period>', '<question>', '<slash>', '<semicolon>', '<quotedbl>', 
+    '<apostrophe>', '<braceleft>', '<bracketleft>', '<bracketright>', '<braceright>', '<equal>', '<plus>', 
+    '<minus>', '<underscore>', '<parenleft>', '<parenright>', '<asterisk>', '<ampersand>', '<percent>', 
+    '<numbersign>', '<at>', '<asciitilde>', '<grave>'
+]
+
 VIM_REGEX = {
     "([1-9]+[0-9]*)*h" : lambda: h(),
     "([1-9]+[0-9]*)*j" : lambda: j(),
@@ -82,9 +96,19 @@ notebook = ttk.Notebook(window)
 ############
 # Functions
 ############
+def normal_key():
+    global vim_controller
+    normal = vim_controller.in_normal(current_index())
+    return "break" if normal else None
+
+
 def bind_codeview(codeview):
-    for char in VIM_CHARS:
+    for char in NON_VIM_CHARS: 
+        codeview.bind(char, lambda event: normal_key())
+
+    for char in VIM_CHARS: 
         codeview.bind(char, WINDOW_EVENTS["vim"])
+
     codeview.bind("<Escape>", WINDOW_EVENTS["esc"])
     codeview.bind("<Return>", WINDOW_EVENTS["ret"])
     codeview.bind("<BackSpace>", WINDOW_EVENTS["back"])
@@ -200,6 +224,11 @@ def load():
                     is_unsaved=False)        
         add_file(file)
         show_last()
+    # This is kind of bad
+    # if this is called we ignore the keypress 
+    # I think something a bit more low level than tkinter would 
+    # have been better in hindsight
+    return "break"
 
 def current_index():
     global notebook
@@ -324,7 +353,8 @@ def ret():
     for c in file_commands:
         if re.fullmatch(c, command):
             file_commands[c]()
-            vim_controller.reset_buffers(index)
+            if not c.startswith(":q"):
+                vim_controller.reset_buffers(index)
             return "break"
 
     process_vim(vim_controller.current_command(index))
@@ -439,7 +469,6 @@ if __name__ == "__main__":
 
     window.bind("<Control-s>", WINDOW_EVENTS["save"])
     window.bind("<Control-Alt-s>", WINDOW_EVENTS["save_as"])
-    window.bind("<Control-q>", WINDOW_EVENTS["close"])
     window.bind("<Control-o>", WINDOW_EVENTS["load"])
     window.bind("<Control-n>", WINDOW_EVENTS["new"])
     notebook.bind("<<NotebookTabChanged>>", WINDOW_EVENTS["tab_change"])

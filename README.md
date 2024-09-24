@@ -97,7 +97,6 @@ Here are the non-Vim shortcuts supported by the editor:
 ```
 - ctrl + s       (save current file)
 - ctrl + alt + s (save current file as)
-- ctrl + q       (close current file)
 - ctrl + o       (open file)
 - ctrl + n       (create new file)
 - ctrl + tab     (switch notebook tabs, supported through Windows)
