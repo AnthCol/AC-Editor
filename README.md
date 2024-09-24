@@ -82,6 +82,15 @@ The subset of Vim commands supported by this editor are listed below:
 - G (shift + g) (move cursor to start of final line of document)
 ```
 
+<br>
+Commands I would like to support in the future are below:
+
+```
+- v       (enter VISUAL mode)
+- /       (find and replace)
+- <NUM> w (jump NUM words in the line)
+```
+
 ## List of Shortcuts
 Here are the non-Vim shortcuts supported by the editor:
 
