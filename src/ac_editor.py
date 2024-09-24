@@ -264,9 +264,10 @@ def close():
         remove_file(index)
 
 def remove_file(index):
-    global files, codeviews, notebook
+    global files, codeviews, notebook, vim_controller
     del codeviews[index]
     del files[index]
+    del vim_controller.buffers[index]
     notebook.forget(index)
     if len(files) == 0:
         new()
@@ -331,7 +332,11 @@ def ret():
 def back(event=None):
     global vim_controller
     index = current_index()
-    vim_controller.delete_char(index)
+    if vim_controller.in_normal(index):
+        vim_controller.delete_char(index)
+        return "break"
+    return None
+
 
 def current_codeview():
     global codeviews

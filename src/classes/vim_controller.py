@@ -40,7 +40,7 @@ class VimController:
 
     def delete_char(self, index):
         buffer = self.buffers[index].command_buffer
-        buffer = buffer[:-1]
+        self.buffers[index].command_buffer = buffer[:-1]
         self.update_display(index)
 
     def current_command(self, index):
