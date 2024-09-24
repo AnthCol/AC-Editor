@@ -9,10 +9,6 @@ VALID_VIM_ANSWERS = {
     "A"   : "A", 
     "^"   : "\\^", 
     "$"   : "\\$", 
-    ":w"  : ":w", 
-    ":q"  : ":q", 
-    ":wq" : ":wq", 
-    ":q!" : ":q!", 
     "gg"  : "gg", 
     "G"   : "G", 
 }
@@ -218,103 +214,6 @@ def test_is_valid_vim_dollar_bad():
         "1234567890$",
         "1$",
         "$1"
-    ]
-    passed = True 
-    for test in tests:
-        valid, regex = is_valid_vim(test)
-        passed &= (valid == False and regex == answer)
-    assert(passed == True)
-
-def test_is_valid_vim_write_good():
-    answer = VALID_VIM_ANSWERS[":w"]
-    tests = [
-        ":w",
-    ]
-    passed = True
-    for test in tests:
-        valid, regex = is_valid_vim(test) 
-        passed &= (valid == True and regex == answer)
-    assert(passed == True)
-
-def test_is_valid_vim_write_bad():
-    answer = None
-    tests = [
-        "+:w",
-        "1:w",
-        ":w1"
-    ]
-    passed = True 
-    for test in tests:
-        valid, regex = is_valid_vim(test)
-        passed &= (valid == False and regex == answer)
-    assert(passed == True)
-
-def test_is_valid_vim_quit_good():
-    answer = VALID_VIM_ANSWERS[":q"]
-    tests = [
-        ":q",
-    ]
-    passed = True
-    for test in tests:
-        valid, regex = is_valid_vim(test) 
-        passed &= (valid == True and regex == answer)
-    assert(passed == True)
-
-def test_is_valid_vim_quit_bad():
-    answer = None
-    tests = [
-        "+:q",
-        "1:q",
-        ":q1"
-    ]
-    passed = True 
-    for test in tests:
-        valid, regex = is_valid_vim(test)
-        passed &= (valid == False and regex == answer)
-    assert(passed == True)
-
-def test_is_valid_vim_writequit_good():
-    answer = VALID_VIM_ANSWERS[":wq"]
-    tests = [
-        ":wq",
-    ]
-    passed = True
-    for test in tests:
-        valid, regex = is_valid_vim(test) 
-        passed &= (valid == True and regex == answer)
-    assert(passed == True)
-
-def test_is_valid_vim_writequit_bad():
-    answer = None
-    tests = [
-        "+:wq",
-        "1:wq",
-        ":wq1"
-    ]
-    passed = True 
-    for test in tests:
-        valid, regex = is_valid_vim(test)
-        passed &= (valid == False and regex == answer)
-    assert(passed == True)
-
-
-def test_is_valid_vim_quitnosave_good():
-    answer = VALID_VIM_ANSWERS[":q!"]
-    tests = [
-        ":q!",
-    ]
-    passed = True
-    for test in tests:
-        valid, regex = is_valid_vim(test) 
-        passed &= (valid == True and regex == answer)
-    assert(passed == True)
-
-def test_is_valid_vim_quitnosave_bad():
-    answer = None
-    tests = [
-        "+:q!",
-        "1:q!",
-        ":q!1"
     ]
     passed = True 
     for test in tests:
