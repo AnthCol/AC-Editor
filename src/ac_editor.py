@@ -56,19 +56,6 @@ VIM_CHARS = [
     "9"
 ]
 
-# YIKES
-# Pretty brutal, but basically every non-special vim key is being assigned to a function
-# that will check which mode the program is in to determine if the keypress is valid
-NON_VIM_CHARS = [
-    '<a>', '<b>', '<c>', '<d>', '<e>', '<f>', '<g>', '<m>', 
-    '<p>', '<r>', '<t>', '<u>', '<v>', '<w>', '<x>', '<y>', '<z>',
-    '<B>', '<C>', '<D>', '<E>', '<F>', '<H>', '<I>', '<J>', '<K>', '<L>', '<M>', '<N>', 
-    '<O>', '<P>', '<Q>', '<R>', '<S>', '<T>', '<U>', '<V>', '<W>', '<X>', '<Y>', '<Z>',
-    '<less>', '<comma>', '<greater>', '<period>', '<question>', '<slash>', '<semicolon>', '<quotedbl>', 
-    '<apostrophe>', '<braceleft>', '<bracketleft>', '<bracketright>', '<braceright>', '<equal>', '<plus>', 
-    '<minus>', '<underscore>', '<parenleft>', '<parenright>', '<asterisk>', '<ampersand>', '<percent>', 
-    '<numbersign>', '<at>', '<asciitilde>', '<grave>'
-]
 
 VIM_REGEX = {
     "([1-9]+[0-9]*)*h" : lambda: h(),
@@ -83,7 +70,20 @@ VIM_REGEX = {
     "G"   : lambda: G()
 }
 
-# Global GUI state (I don't like it either)
+# Pretty brutal, but basically every non-special vim key is being assigned to a function
+# that will check which mode the program is in to determine if the keypress is valid
+NON_VIM_CHARS = [
+    '<a>', '<b>', '<c>', '<d>', '<e>', '<f>', '<g>', '<m>', 
+    '<p>', '<r>', '<t>', '<u>', '<v>', '<w>', '<x>', '<y>', '<z>',
+    '<B>', '<C>', '<D>', '<E>', '<F>', '<H>', '<I>', '<J>', '<K>', '<L>', '<M>', '<N>', 
+    '<O>', '<P>', '<Q>', '<R>', '<S>', '<T>', '<U>', '<V>', '<W>', '<X>', '<Y>', '<Z>',
+    '<less>', '<comma>', '<greater>', '<period>', '<question>', '<slash>', '<semicolon>', '<quotedbl>', 
+    '<apostrophe>', '<braceleft>', '<bracketleft>', '<bracketright>', '<braceright>', '<equal>', '<plus>', 
+    '<minus>', '<underscore>', '<parenleft>', '<parenright>', '<asterisk>', '<ampersand>', '<percent>', 
+    '<numbersign>', '<at>', '<asciitilde>', '<grave>'
+]
+
+# Global GUI state 
 window = tk.Tk()
 settings = Settings()
 database = Database()
