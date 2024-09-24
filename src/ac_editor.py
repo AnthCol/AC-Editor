@@ -13,9 +13,9 @@ from .classes.database       import Database
 from .classes.settings       import Settings
 from .classes.vim_controller import VimController
 
-##########
-# Globals
-##########
+############
+# Constants
+############
 WINDOW_EVENTS = {
     "new"        : lambda event: new(),
     "load"       : lambda event: load(),
@@ -56,7 +56,6 @@ VIM_CHARS = [
     "9"
 ]
 
-
 VIM_REGEX = {
     "([1-9]+[0-9]*)*h" : lambda: h(),
     "([1-9]+[0-9]*)*j" : lambda: j(),
@@ -83,7 +82,14 @@ NON_VIM_CHARS = [
     '<numbersign>', '<at>', '<asciitilde>', '<grave>'
 ]
 
-# Global GUI state 
+###################################################
+# Global GUI State
+# Despite general bad practice, seemed 
+# to be my best option here. In hindsight, making
+# this project in a different language, or maybe
+# with a different GUI API would have been better
+# but I'm in too deep for that now. 
+###################################################
 window = tk.Tk()
 settings = Settings()
 database = Database()
@@ -93,15 +99,20 @@ files : List[File] = []
 codeviews : List[CodeView] = []
 notebook = ttk.Notebook(window)
 
-############
-# Functions
-############
-def normal_key():
-    global vim_controller
-    normal = vim_controller.in_normal(current_index())
-    return "break" if normal else None
+###################
+# Closing function
+###################
+def end():
+    global window, database, files, settings
+    update_files()
+    database.close([f for f in files], settings)
+    window.quit()
+    window.destroy()
 
 
+###################
+# Codeview helpers
+###################
 def bind_codeview(codeview):
     for char in NON_VIM_CHARS: 
         codeview.bind(char, lambda event: normal_key())
@@ -113,17 +124,6 @@ def bind_codeview(codeview):
     codeview.bind("<Return>", WINDOW_EVENTS["ret"])
     codeview.bind("<BackSpace>", WINDOW_EVENTS["back"])
 
-def determine_lexer(file):
-    lexer = TextLexer
-    if not file.is_unsaved:
-        try:
-            lexer = get_lexer_for_filename(file.name)
-        # For whatever reason, this gives an error at program exit, but everything works fine
-        # TypeError doesn't inherit from BaseException, but it gets caught and used....
-        # Leaving it for now, FIXME in the future. 
-        except ClassNotFound:
-            lexer = TextLexer  
-    return lexer
 
 def make_codeview(file):
     global notebook, settings
@@ -151,6 +151,20 @@ def fill_codeview(codeview, file):
     if not failed:
         codeview.insert(tk.END, content)
 
+###########################
+# General helper functions
+###########################
+def determine_lexer(file):
+    lexer = TextLexer
+    if not file.is_unsaved:
+        try:
+            lexer = get_lexer_for_filename(file.name)
+        # For whatever reason, this gives an error at program exit, but everything works fine
+        # TypeError doesn't inherit from BaseException, but it gets caught and used....
+        # Leaving it for now, FIXME in the future. 
+        except ClassNotFound:
+            lexer = TextLexer  
+    return lexer
 
 def determine_name():
     global files
@@ -170,15 +184,6 @@ def determine_rank():
     global files 
     return len(files) + 1
 
-def new():
-    file = File(path=None, 
-                name=determine_name(),
-                rank=determine_rank(),
-                content=None,
-                is_unsaved=True) 
-    add_file(file)
-    show_last()
-
 def update_files():
     global files, codeviews
     for rank in range(len(files)):
@@ -187,6 +192,34 @@ def update_files():
             f.content = codeview_contents(codeviews[rank])
         f.rank = rank + 1
 
+def codeview_contents(codeview):
+    return codeview.get("1.0", "end-1c")
+
+def make_icon(path):
+    return PhotoImage(file=path)
+
+####################
+# Aesthetic helpers
+####################
+def show_last():
+    global notebook
+    notebook.select(notebook.index("end") - 1)
+
+def update_display(index):
+    global vim_controller, codeviews
+    update_title()
+    vim_controller.update_display(index)
+
+def update_title():
+    global files, window
+    index = current_index()
+    file = files[index]
+    title = file.name if file.is_unsaved else file.path
+    window.title("ac_editor - " + title)
+
+##########################
+# File handling functions
+##########################
 def add_file(file):
     global files, codeviews, notebook, vim_controller
     codeview, frame = make_codeview(file)
@@ -198,19 +231,14 @@ def add_file(file):
     vim_controller.new_buffer()
     vim_controller.update_display(current_index())
 
-def end():
-    global window, database, files, settings
-    update_files()
-    database.close([f for f in files], settings)
-    window.quit()
-    window.destroy()
-
-def show_last():
-    global notebook
-    notebook.select(notebook.index("end") - 1)
-
-def make_icon(path):
-    return PhotoImage(file=path)
+def new():
+    file = File(path=None, 
+                name=determine_name(),
+                rank=determine_rank(),
+                content=None,
+                is_unsaved=True) 
+    add_file(file)
+    show_last()
 
 def load():
     global notebook
@@ -229,10 +257,6 @@ def load():
     # I think something a bit more low level than tkinter would 
     # have been better in hindsight
     return "break"
-
-def current_index():
-    global notebook
-    return notebook.index(notebook.select())
 
 def save():
     global files, codeviews
@@ -263,21 +287,6 @@ def save_as():
         f.write(codeview_contents(codeviews[index]))
     update_title()
 
-def update_display(index):
-    global vim_controller
-    update_title()
-    vim_controller.update_display(index)
-
-def update_title():
-    global files, window
-    index = current_index()
-    file = files[index]
-    title = file.name if file.is_unsaved else file.path
-    window.title("ac_editor - " + title)
-
-def codeview_contents(codeview):
-    return codeview.get("1.0", "end-1c")
-
 def close():
     global files, notebook, codeviews
     index = current_index()
@@ -301,6 +310,9 @@ def remove_file(index):
     if len(files) == 0:
         new()
 
+###################################
+# Vim command processing functions
+###################################
 def is_valid_vim(command):
     for regex in VIM_REGEX:
         if re.fullmatch(regex, command):
@@ -314,8 +326,7 @@ def process_vim(command):
     regex = values[1] 
     if valid:
         VIM_REGEX[regex]()
-        vim_controller.reset_buffers(current_index())
-    
+        vim_controller.reset_buffers(current_index()) 
     # Returning "break" prevents default behaviour
     return "break" if valid else None
 
@@ -332,9 +343,14 @@ def vim(event=None):
     # If in insert mode, we want to treat the character normally
     return None
 
-########################
-# Vim Related Functions
-########################
+#############################################################
+# Key handling functions (keys that are not vim-significant)
+#############################################################
+def normal_key():
+    global vim_controller
+    normal = vim_controller.in_normal(current_index())
+    return "break" if normal else None
+
 def esc():
     global vim_controller
     index = current_index()
@@ -367,6 +383,12 @@ def back(event=None):
         return "break"
     return None
 
+#####################################
+# Functions for getting current info
+#####################################
+def current_index():
+    global notebook
+    return notebook.index(notebook.select())
 
 def current_codeview():
     global codeviews
