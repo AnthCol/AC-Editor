@@ -293,13 +293,15 @@ def close():
     index = current_index()
     file = files[index]
     content = codeview_contents(codeviews[index])
-    save = False
-    if file.is_unsaved and content != "":
-        save = tk.messagebox.askyesnocancel("Save File", "Do you want to save this file?")
+    ask = (file.is_unsaved and content != "") or (file.has_changed)
+    answer = False
+    if ask:
+        answer = tk.messagebox.askyesnocancel("Save File", "Do you want to save this file?")
     # Returns None if cancel
-    if save == True:
-        save_as()
-    elif save == False:
+    if answer == True:
+        save()
+        remove_file(index)
+    elif answer == False:
         remove_file(index)
 
 def remove_file(index):
@@ -334,7 +336,7 @@ def process_vim(command):
 # Called whenever any of the valid vim characters are pressed
 # This excludes special ones like enter, backspace and escape.
 def vim(event=None):
-    global vim_controller
+    global vim_controller, files
     index = current_index()
     if not vim_controller.in_insert(index):
         vim_controller.append_buffer(event.char, index)
@@ -342,6 +344,8 @@ def vim(event=None):
         process_vim(vim_controller.current_command(index))    
         return "break"
     # If in insert mode, we want to treat the character normally
+    # in this case, the file has changed, so we set that 
+    files[index].has_changed = True
     return None
 
 #############################################################
@@ -464,6 +468,7 @@ def G():
 
 def w():
     save()
+    files[current_index].has_changed = False
 
 def q(save):
     if save:
@@ -472,7 +477,9 @@ def q(save):
         remove_file(current_index())
 
 def wq():
+    global files
     save()
+    files[current_index].has_changed = False
     close()
 
 #######
