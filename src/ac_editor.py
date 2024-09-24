@@ -2,7 +2,7 @@ import os
 import re
 import tkinter as tk
 
-from tkinter         import ttk, PhotoImage, filedialog, TclError
+from tkinter         import ttk, PhotoImage, filedialog
 from typing          import List
 from chlorophyll     import CodeView
 from pygments.util   import ClassNotFound
@@ -78,7 +78,6 @@ vim_controller = VimController(ttk.Label(window, anchor="w"))
 files : List[File] = []
 codeviews : List[CodeView] = []
 notebook = ttk.Notebook(window)
-
 
 ############
 # Functions
@@ -298,8 +297,10 @@ def vim(event=None):
     if not vim_controller.in_insert(index):
         vim_controller.append_buffer(event.char, index)
         vim_controller.update_display(index)
-        return process_vim(vim_controller.current_command(index))
-    return None 
+        process_vim(vim_controller.current_command(index))    
+        return "break"
+    # If in insert mode, we want to treat the character normally
+    return None
 
 ########################
 # Vim Related Functions
@@ -319,13 +320,12 @@ def ret():
         ":q!" : lambda: q(save=False)
     }
     command = vim_controller.current_command(index)
-
     for c in file_commands:
         if re.fullmatch(c, command):
             file_commands[c]()
             vim_controller.reset_buffers(index)
-    # If we are not pressing enter on a file command 
-    # Treat it as a normal one. 
+            return "break"
+
     process_vim(vim_controller.current_command(index))
 
 def back(event=None):
@@ -346,6 +346,7 @@ def parse_buffer():
     parts = re.split('h|j|k|l', buffer)
     return str(parts[0])
 
+
 ######################
 # VIM_REGEX functions
 ######################
@@ -353,21 +354,25 @@ def h():
     codeview = current_codeview()
     amount = parse_buffer()
     codeview.mark_set("insert", f"insert-{amount} c")
+    codeview.see("insert")
 
 def j():
     codeview = current_codeview()
     amount = parse_buffer()
     codeview.mark_set("insert", f"insert +{amount} l")
+    codeview.see("insert")
 
 def k():
     codeview = current_codeview()
     amount = parse_buffer()
     codeview.mark_set("insert", f"insert -{amount} l")
+    codeview.see("insert")
 
 def l():
     codeview = current_codeview()
     amount = parse_buffer()
     codeview.mark_set("insert", f"insert+{amount} c")
+    codeview.see("insert")
 
 def i():
     global vim_controller
@@ -381,19 +386,23 @@ def A():
 def hat():
     codeview = current_codeview()
     codeview.mark_set("insert", "insert linestart")
+    codeview.see("insert")
 
 def dollar():
     codeview = current_codeview()
     codeview.mark_set("insert", "insert lineend")
+    codeview.see("insert")
 
 def gg():
     codeview = current_codeview()
     codeview.mark_set("insert", "1.0")
+    codeview.see("insert")
 
 def G():
     codeview = current_codeview()
     codeview.mark_set("insert", "end")
     hat()
+    codeview.see("insert")
 
 def w():
     save()
