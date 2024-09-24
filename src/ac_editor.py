@@ -65,10 +65,6 @@ VIM_REGEX = {
     "A"   : lambda: A(),
     "\\^" : lambda: hat(),
     "\\$" : lambda: dollar(), 
-    ":w"  : lambda: w(),
-    ":q"  : lambda: q(save=True), 
-    ":wq" : lambda: wq(), 
-    ":q!" : lambda: q(save=False), 
     "gg"  : lambda: gg(),
     "G"   : lambda: G()
 }
@@ -316,6 +312,20 @@ def esc():
 def ret():
     global vim_controller
     index = current_index()
+    file_commands = {
+        ":w"  : lambda: w(),
+        ":q"  : lambda: q(save=True), 
+        ":wq" : lambda: wq(), 
+        ":q!" : lambda: q(save=False)
+    }
+    command = vim_controller.current_command(index)
+
+    for c in file_commands:
+        if re.fullmatch(c, command):
+            file_commands[c]()
+            vim_controller.reset_buffers(index)
+    # If we are not pressing enter on a file command 
+    # Treat it as a normal one. 
     process_vim(vim_controller.current_command(index))
 
 def back(event=None):
@@ -392,13 +402,11 @@ def q(save):
     if save:
         close()
     else:
-        remove_file()
+        remove_file(current_index())
 
 def wq():
     save()
-
-
-
+    close()
 
 #######
 # Main
