@@ -209,6 +209,7 @@ def update_display(index):
     global vim_controller, codeviews
     update_title()
     vim_controller.update_display(index)
+    codeviews[index].focus_set()
 
 def update_title():
     global files, window
