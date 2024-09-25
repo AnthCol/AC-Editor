@@ -378,7 +378,12 @@ def ret():
                 vim_controller.reset_buffers(index)
             return "break"
 
-    process_vim(vim_controller.current_command(index))
+    result = process_vim(vim_controller.current_command(index))
+    if vim_controller.in_normal(index):
+        return "break"
+    else:
+        return result
+
 
 def back(event=None):
     global vim_controller
@@ -468,7 +473,7 @@ def G():
 
 def w():
     save()
-    files[current_index].has_changed = False
+    files[current_index()].has_changed = False
 
 def q(save):
     if save:
@@ -479,7 +484,7 @@ def q(save):
 def wq():
     global files
     save()
-    files[current_index].has_changed = False
+    files[current_index()].has_changed = False
     close()
 
 #######
