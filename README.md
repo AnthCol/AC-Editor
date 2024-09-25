@@ -1,7 +1,6 @@
-# ac_editor (Work in Progress)
-Welcome to ac_editor!<br> 
+# AC-Editor
+Welcome to AC-Editor!<br> 
 This is a small, lightweight, shortcuts-based editor that I made for myself, intended to be used primarily for note-taking. 
-
 
 ## Tech 
 
@@ -10,12 +9,11 @@ This is a small, lightweight, shortcuts-based editor that I made for myself, int
 [<img src="./docs/assets/tkinter_logo.gif" height=100/>](https://www.tcl.tk/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [<img src="./docs/assets/pytest_logo.png" height=100/>](https://docs.pytest.org/en/stable/)
 
-## Demo Video
-
-To be completed.
-
 ## Screenshot
 <img src="./docs/assets/screenshot.png" height=400/>
+
+## Vim Command Demo Video
+[![Watch the demo here!](https://img.youtube.com/vi/sQxEOvUJhyQ/hqdefault.jpg)](https://www.youtube.com/embed/sQxEOvUJhyQ)
 
 ## Usage
 
@@ -95,9 +93,16 @@ Commands I would like to support in the future are below:
 Here are the non-Vim shortcuts supported by the editor:
 
 ```
+############################################
+# The functionality described in this block
+# may be removed in favour of using vim 
+# commands exclusively in the future
+
 - ctrl + s       (save current file)
 - ctrl + alt + s (save current file as)
 - ctrl + o       (open file)
+############################################
+
 - ctrl + n       (create new file)
 - ctrl + tab     (switch notebook tabs, supported through Windows)
 ```
